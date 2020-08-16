@@ -1,0 +1,15 @@
+MouseyClient/__tests__/
+MouseyClient/android/
+MouseyClient/ios/
+MouseyClient/node_modules/
+*.buckconfig
+*.eslintrc
+*.flowconfig
+*.prettierrc
+*.watchmanconfig
+*.config
+*.json
+.idea
+*.iml
+MouseyServer/Presistent/__pycache__/
+*.pptx
