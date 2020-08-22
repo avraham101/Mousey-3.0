@@ -1,4 +1,4 @@
-import {Accelometer, Gyroscope} from './GenerationData';
+import {Accelometer, Gyroscope, Angle} from './GenerationData';
 
 export type State = Ready | Dir | Stop | Done | Error;  
 export type Dir = Up | Down | Left | Right | UpLeft | UpRight | DownLeft | DownRight | Ned; 
@@ -28,6 +28,7 @@ interface Ned {
   speed: string,
   accelometers: Accelometer[],
   gyroscopes: Gyroscope[],
+  angels: Angle[],
 }
 
 interface Up {
@@ -35,6 +36,7 @@ interface Up {
   speed: string,
   accelometers: Accelometer[],
   gyroscopes: Gyroscope[],
+  angels: Angle[],
 }
 
 interface Down {
@@ -42,6 +44,7 @@ interface Down {
   speed: string,
   accelometers: Accelometer[],
   gyroscopes: Gyroscope[],
+  angels: Angle[],
 }
 
 interface Left {
@@ -49,6 +52,7 @@ interface Left {
   speed: string,
   accelometers: Accelometer[],
   gyroscopes: Gyroscope[],
+  angels: Angle[],
 }
 
 interface Right {
@@ -56,6 +60,7 @@ interface Right {
   speed: string,
   accelometers: Accelometer[],
   gyroscopes: Gyroscope[],
+  angels: Angle[],
 }
 
 interface UpRight {
@@ -63,6 +68,7 @@ interface UpRight {
   speed: string,
   accelometers: Accelometer[],
   gyroscopes: Gyroscope[],
+  angels: Angle[],
 }
 
 interface UpLeft {
@@ -70,6 +76,7 @@ interface UpLeft {
   speed: string,
   accelometers: Accelometer[],
   gyroscopes: Gyroscope[],
+  angels: Angle[],
 }
 
 interface DownRight {
@@ -77,6 +84,7 @@ interface DownRight {
   speed: string,
   accelometers: Accelometer[],
   gyroscopes: Gyroscope[],
+  angels: Angle[],
 }
 
 interface DownLeft {
@@ -84,6 +92,7 @@ interface DownLeft {
   speed: string,
   accelometers: Accelometer[],
   gyroscopes: Gyroscope[],
+  angels: Angle[],
 }
 
 //--------------------------------------------- Predicates -------------------------------------------------
@@ -125,39 +134,39 @@ export const createError = (msg:string):Error => {
 }
 
 export const createEmptyUp = ():Up => {
-  return {tag:'Up', speed:null, accelometers:[],gyroscopes:[]};
+  return {tag:'Up', speed:null, accelometers:[],gyroscopes:[], angels:[]};
 }
 
 export const createEmptyDown = ():Down => {
-  return {tag:'Down', speed:null, accelometers:[],gyroscopes:[]};
+  return {tag:'Down', speed:null, accelometers:[],gyroscopes:[], angels:[]};
 }
 
 export const createEmptyRight = ():Right => {
-  return {tag:'Right', speed:null, accelometers:[],gyroscopes:[]};
+  return {tag:'Right', speed:null, accelometers:[],gyroscopes:[], angels:[]};
 }
 
 export const createEmptyLeft = ():Left => {
-  return {tag:'Left', speed:null, accelometers:[],gyroscopes:[]};
+  return {tag:'Left', speed:null, accelometers:[],gyroscopes:[], angels:[]};
 }
 
 export const createEmptyUpRight = ():UpRight => {
-  return {tag:'UpRight', speed:null, accelometers:[],gyroscopes:[]};
+  return {tag:'UpRight', speed:null, accelometers:[],gyroscopes:[], angels:[]};
 }
 
 export const createEmptyUpLeft = ():UpLeft => {
-  return {tag:'UpLeft', speed:null, accelometers:[],gyroscopes:[]};
+  return {tag:'UpLeft', speed:null, accelometers:[],gyroscopes:[], angels:[]};
 }
 
 export const createEmptyDownRight = ():DownRight => {
-  return {tag:'DownRight', speed:null, accelometers:[],gyroscopes:[]};
+  return {tag:'DownRight', speed:null, accelometers:[],gyroscopes:[], angels:[]};
 }
 
 export const createEmptyDownLeft = ():DownLeft => {
-  return {tag:'DownLeft', speed:null, accelometers:[],gyroscopes:[]};
+  return {tag:'DownLeft', speed:null, accelometers:[],gyroscopes:[], angels:[]};
 }
 
 export const createEmptyNed = ():Ned => {
-  return {tag:'Ned', speed:null, accelometers:[],gyroscopes:[]};
+  return {tag:'Ned', speed:null, accelometers:[],gyroscopes:[], angels:[]};
 }
 
 //----------------------------------------------- State Functions ------------------------------------
@@ -173,6 +182,7 @@ export const dirHasEnough = (dir:Dir):boolean => {
 export const clearDir = (dir:Dir):void => {
   dir.accelometers = [];
   dir.gyroscopes= [];
+  dir.angels=[];
 }
 
 export const clearGyroscope = (dir:Dir):void => {
@@ -181,4 +191,8 @@ export const clearGyroscope = (dir:Dir):void => {
 
 export const clearAccelometer = (dir:Dir):void => {
   dir.accelometers = [];
+}
+
+export const clearAngler = (dir:Dir):void => {
+  dir.angels = [];
 }

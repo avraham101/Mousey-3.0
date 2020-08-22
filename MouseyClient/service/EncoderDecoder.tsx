@@ -1,4 +1,5 @@
-import {Message, createSearchMsg, createConnectMsg} from './Messages';
+import {Message, createSearchMsg, createConnectMsg, createReciveSplitMsg} from './Messages';
+import {SEARCH_MSG, FOUND_MSG, CONNECT_MSG, GENERATION_MSG, MOUSE_CLICK_MGS, MOUSE_MOVE_MSG, SPLIT_MSG, RECIVE_SPLIT_MSG} from './Messages'
 
 export default class EncoDecoder {
 
@@ -29,15 +30,18 @@ export default class EncoDecoder {
   decode = (cipher) => {
     let opcode = parseInt(cipher[0]);
     switch(opcode) {
-      case 19: {
+      case SEARCH_MSG: {
         let key = this.bytesToString(cipher, 1);
         let msg = createSearchMsg(key); 
         return msg;
       }
-      case 21: {
+      case CONNECT_MSG: {
         let key = this.bytesToString(cipher, 1);
         let msg = createConnectMsg(key);
         return msg;
+      }
+      case RECIVE_SPLIT_MSG: {
+        return createReciveSplitMsg();
       }
       default:
         console.log('wrong opcode recived')

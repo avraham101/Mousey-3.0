@@ -19,8 +19,8 @@ export default class ScreenHandler extends React.Component{
   
   constructor() {
     super();
-    //this.state = {stratgyScreen:new WelcomeScreen(this)};  
-    this.state = {stratgyScreen:new InitScreen(this, new LogicManager())};
+    this.state = {stratgyScreen:new WelcomeScreen(this)};  
+    //this.state = {stratgyScreen:new InitScreen(this, new LogicManager())};
     //this.state = {stratgyScreen:new MouseScreen(this, new LogicManager())}; 
   }
 

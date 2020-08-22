@@ -7,10 +7,14 @@ CONNECT_OPCODE = 21
 GENERATION_OPCODE = 22
 MOUSE_CLICK_OPCODE = 23
 MOUSE_MOVE_OPCODE = 24
+SPLIT_OPCODE = 29
+RECIVE_SPLIT_OPCODE = 30
+
 
 class Message:
     def __init__(self, opcode):
         self.opcode = opcode
+
 
 class SearchMessage(Message):
 
@@ -20,6 +24,7 @@ class SearchMessage(Message):
 
     def encode(self):
         return self.publicKey.encode()
+
 
 class FoundMessage(Message):
 
@@ -38,6 +43,7 @@ class FoundMessage(Message):
         text += ' ' + str(self.battery) + '%'
         return text
 
+
 class ConnectMessage(Message):
 
     def __init__(self, privateKey):
@@ -46,6 +52,7 @@ class ConnectMessage(Message):
 
     def encode(self):
         return self.privateKey.encode()
+
 
 class GenerationMessage(Message):
 
@@ -57,17 +64,19 @@ class GenerationMessage(Message):
     def create_data_frame(self):
         lst = []
         columns = ['tag', 'accelometer_x', 'accelometer_y', 'accelometer_z',
-                   'gyroscope_x', 'gyroscope_y', 'gyroscope_z', 'speed']
+                   'gyroscope_x', 'gyroscope_y', 'gyroscope_z', 'angle', 'speed']
         for state in self.data:
             tag = state['tag'].lower()
             speed = state['speed']
             accs = state['accelometers']
             gyroes = state['gyroscopes']
-            accs, gyroes = self.fix_accelometer_gyroscope_arr(accs, gyroes)
+            angles = state['angels']
+            accs, gyroes, angles = self.fix_arrays(accs, gyroes, angles)
             for i in range(0, len(accs)):
                 acc = accs[i]
                 gyro = gyroes[i]
-                arr = [tag, acc['x'], acc['y'], acc['z'], gyro['x'], gyro['y'], gyro['z'], speed]
+                angle = angles[i]
+                arr = [tag, acc['x'], acc['y'], acc['z'], gyro['x'], gyro['y'], gyro['z'], angle['angle'], speed]
                 lst.append(arr)
         return pd.DataFrame(lst, columns=columns)
 
@@ -79,6 +88,20 @@ class GenerationMessage(Message):
         elif gyro_size > acc_size:
             gyroscope = gyroscope[0:acc_size]
         return accelometer, gyroscope
+
+    def fix_arrays(self, accelometer, gyroscope, angel):
+        minom = len(accelometer)  # min = acc_size
+        gyro_size = len(gyroscope)
+        angel_size = len(angel)
+        if gyro_size < minom:
+            minom = gyro_size
+        if angel_size < minom:
+            minom = angel_size
+        accelometer = accelometer[0:minom]
+        gyroscope = gyroscope[0:minom]
+        angel = angel[0:minom]
+        return accelometer, gyroscope, angel
+
 
 class MouseClick(Message):
 
@@ -93,6 +116,7 @@ class MouseClick(Message):
     def getState(self):
         return self.state
 
+
 class MouseMove(Message):
 
     def __init__(self, data):
@@ -104,3 +128,30 @@ class MouseMove(Message):
 
     def getGyro(self):
         return self.data['gyro']['x'], self.data['gyro']['y'], self.data['gyro']['z']
+
+
+class SplitMsg(Message):
+
+    def __init__(self, index, total, data):
+        super().__init__(SPLIT_OPCODE)
+        self.index = index
+        self.total = total
+        self.data = data
+
+    def getIndex(self):
+        return self.index
+
+    def getTotal(self):
+        return self.total
+
+    def getData(self):
+        return self.data
+
+
+class ReciveSplitMsg(Message):
+
+    def __init__(self):
+        super().__init__(RECIVE_SPLIT_OPCODE)
+
+    def encode(self):
+        return bytes([0])

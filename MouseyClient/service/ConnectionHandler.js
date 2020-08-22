@@ -1,11 +1,11 @@
 import dgram from 'react-native-udp';
 import EncoDecoder from './EncoderDecoder';
 import {getSystemName, getDeviceName, getUniqueId, getBatteryLevel, } from 'react-native-device-info'
-import {createFoundMsg, isSearchMsg, isConnectMsg, createGenerationMsg} from './Messages'
+import {createFoundMsg, isSearchMsg, isConnectMsg, createGenerationMsg, createSplitMsgs, isReciveSpliteMsg} from './Messages'
 
 var port_mousey = undefined;
 var address_mousey = undefined;
-
+var MAX_UDP_SIZE = 65000;
 export default class ConnectionHandler {
 
   constructor(port) {
@@ -31,6 +31,9 @@ export default class ConnectionHandler {
         promise(msg.key)
       }
       });
+    this.socket.on('error', (e)=>{
+      console.log(e);
+    })
   }
   
   send = async function(msg) {
@@ -72,8 +75,28 @@ export default class ConnectionHandler {
   }
   
   sendGenerationAnalayze = (data) => {
+    let encodeco = this.encodeco;
     let id = getUniqueId();
     let msg = createGenerationMsg(id,data);
-    this.send(msg);
+    if(msg.toString().length < MAX_UDP_SIZE) {
+      this.send(msg);
+    }
+    else {
+      let msgs = createSplitMsgs(msg);
+      let nextMsg = (msgs, index) => {
+        if(msgs.length > index) {
+          console.log('send split msg '+index);
+          this.send(msgs[index]);
+          this.socket.on('message', function(msg, senderInfo) {
+            msg = encodeco.decode(msg);
+            if(isReciveSpliteMsg(msg)) {
+              console.log('recived Recived Split Msg '+index);
+              nextMsg(msgs, index+1); 
+            }
+          });
+        }
+      }
+      nextMsg(msgs,0);
+    }
   } 
 }

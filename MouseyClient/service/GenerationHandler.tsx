@@ -7,8 +7,8 @@ import { State, Dir,
          createEmptyDown, createEmptyUp, createEmptyRight, createEmptyLeft, createEmptyUpRight, createEmptyDownLeft, 
          createEmptyUpLeft, createDone, createError, createReady, isDone, createStop, createEmptyDownRight,
          createEmptyNed} from './GenerationState';
-import { createAccelometer, createGyroscope, 
-         Accelometer, sameSensorData, Gyroscope} from './GenerationData';
+import { createAccelometer, createGyroscope, createEngle,
+         Accelometer, sameSensorData, Gyroscope, Angle} from './GenerationData';
 
 export default class GenerationHandler {
 
@@ -34,45 +34,8 @@ export default class GenerationHandler {
   }
 
   /**
-   * TODO: NEED TO DELETE THIS
-   * the function add accelometer data to the state
-   * @param param0 - the data
-   */
-  old_addAccelometer({x,y,z}:{x:number,y:number,z:number}, promise:(state:string)=>void):void {
-    if(isDir(this.state)) {
-        let current:Accelometer = createAccelometer(x,y,z);
-        let len = this.state.accelometers.length;
-        if(len == 0) {
-          this.state.accelometers.push(current);
-        }
-        else {
-          console.log(len)
-          let last:Accelometer = this.state.accelometers[len - 1];
-          if(!isNed(this.state) && (this.samePointCounter < this.treshold || !sameSensorData(last,current, 3.5))) {
-            if(sameSensorData(last,current, 3.5))
-              this.samePointCounter++;
-            else
-              this.samePointCounter=0;
-            this.state.accelometers.push(current);
-          }
-          else if(isNed(this.state) && !dirHasEnough(this.state)) {
-            this.state.accelometers.push(current);
-          }
-          else {
-            if(dirHasEnough(this.state)) {
-              this.nextState();
-              promise(this.getState())
-            }
-            this.samePointCounter=0;
-            clearDir(this.state);
-          }
-        }
-    }
-  }
-
-  /**
    * The function add Accelometer data to the state
-   * @param param0 - the data
+   * @param param0 - the data acceleration
    */
   addAccelometer({x,y,z}:{x:number,y:number,z:number}):void {
     if(isDir(this.state)) {
@@ -85,12 +48,24 @@ export default class GenerationHandler {
 
   /**
    * the function add Gyroscope data to the state
-   * @param param0 - the data
+   * @param param0 - the data gyroscope
    */
   addGyroscope({x,y,z}:{x:number,y:number,z:number}):void {
     if(isDir(this.state)) {
       let current:Gyroscope = createGyroscope(x,y,z);
       this.state.gyroscopes.push(current);
+    }
+  }
+
+  /**
+   * The function add an Angle to the state. The angle calculate from the magnometer
+   * @param param0 - the data magnometer
+   */
+  addAngle({x,y,z}:{x:number,y:number,z:number}):void {
+    if(isDir(this.state)) {
+      let current:Angle = createEngle(x,y,z);
+      //console.log(current.angle);
+      this.state.angels.push(current);
     }
   }
 
@@ -117,8 +92,6 @@ export default class GenerationHandler {
       isNed(this.state)? this.state = createDone():
       this.state = createError("State Not Found");
     }
-    //TODO: sometimes work sending it imidetly some times not
-    // this.sendSensorsData()
   }
 
   /**

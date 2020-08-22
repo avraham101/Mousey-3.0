@@ -2,7 +2,6 @@ import struct
 import json
 from Logic import Messages
 
-
 def cleanString(text):
     result = ''
     i = 0
@@ -31,6 +30,8 @@ class EncoderDecoder:
             return self.decodeMouseClickMsg(buffer)
         elif opCode == chr(Messages.MOUSE_MOVE_OPCODE):
             return self.decodeMouseMoveMsg(buffer)
+        elif opCode == chr(Messages.SPLIT_OPCODE):
+            return self.decodeSplitMsg(buffer)
         return None
 
     def decodeFoundMsg(self, buffer):
@@ -59,8 +60,7 @@ class EncoderDecoder:
         offset += 40
         size, rest = struct.unpack_from('10sc', buffer, offset)
         size = str(size, "utf-8")
-        size = size.replace(chr(0), '')
-        size = int(size)
+        size = int(cleanString(size))
         size, data = struct.unpack_from('10s'+str(size)+'s', buffer, offset)
         data = str(data, "utf-8")
         data = json.loads(data)
@@ -70,9 +70,9 @@ class EncoderDecoder:
         offset = 1
         button, state = struct.unpack_from('10s10s', buffer, offset)
         button = str(button, "utf-8")
-        button = button.replace('\0', '')
+        button = cleanString(button)
         state = str(state, "utf-8")
-        state = state.replace('\0', '')
+        state = cleanString(state)
         if state == 'true':
             state = True
         else:
@@ -83,12 +83,47 @@ class EncoderDecoder:
         offset = 1
         size, rest = struct.unpack_from('10sc', buffer, offset)
         size = str(size, "utf-8")
-        size = size.replace(chr(0), '')
-        size = int(size)
+        size = int(cleanString(size))
         size, data = struct.unpack_from('10s' + str(size) + 's', buffer, offset)
         data = str(data, "utf-8")
         data = json.loads(data)
         return Messages.MouseMove(data)
+
+    def decodeSplitMsg(self, buffer):
+        offset = 1
+        index, rest = struct.unpack_from('10sc', buffer, offset)
+        index = str(index, "utf-8")
+        index = int(cleanString(index))
+        offset += 10
+        total, rest = struct.unpack_from('10sc', buffer, offset)
+        total = str(total, "utf-8")
+        total = int(cleanString(total))
+        offset += 10
+        size, data = struct.unpack_from('10sc', buffer, offset)
+        size = str(size, "utf-8")
+        size = int(cleanString(size))
+        size, data = struct.unpack_from('10s' + str(size) + 's', buffer, offset)
+        data = str(data, "utf-8")
+        return Messages.SplitMsg(index, total, data)
+
+    def decodeString(self, s):
+        opCode = s[0]
+        if opCode == chr(Messages.GENERATION_OPCODE):
+            print('here 1')
+            return self.decodeGenerationMsgFromString(s)
+        return None
+
+    def decodeGenerationMsgFromString(self, s):
+        offset = 1
+        id = s[offset: offset + 40]
+        id = cleanString(id)
+        offset += 40
+        size = s[offset: offset + 10]
+        size = int(cleanString(size))
+        offset += 10
+        data = s[offset: offset+size]
+        data = json.loads(data)
+        return Messages.GenerationMessage(id, data)
 
 class WrongMsgRecived(Exception):
     """Wrong Msg recived, can't translate"""

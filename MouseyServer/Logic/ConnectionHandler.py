@@ -20,6 +20,7 @@ class ConnectionHandler:
     # msg: (Object) the Msg object to send
     def sendMsg(self, msg, ip):
         encodeMessage = self.encoDeco.encode(msg)
+        print('send msg to client', ip, 'msg', encodeMessage)
         self.sock.sendto(encodeMessage, ip)
 
     # The function accept a connection

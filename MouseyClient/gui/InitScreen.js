@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, Button, StyleSheet, ImageBackground, Image, TouchableOpacity} from 'react-native';
 import Screen from './Screen';
 import MouseScreen from './MouseScreen';
-import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope} from "react-native-sensors";
+import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope, magnetometer} from "react-native-sensors";
 import LogicManager from '../service/LogicManager';
 
 export default class InitScreen extends Screen{
@@ -15,6 +15,7 @@ export default class InitScreen extends Screen{
     this.subscribe = true;
     this.accelerometer = undefined;
     this.gyroscope = undefined;
+    this.magnetometer = undefined;
     this.subscribeSensors = this.subscribeSensors.bind(this);
     this.moveToNextState = this.moveToNextState.bind(this);
   };
@@ -112,10 +113,10 @@ export default class InitScreen extends Screen{
   }
 
   subscribeSensors() {
-    // let intervals = 10; // for fast moving
-    let intervals = 10; // for fast moving
+    let intervals = 20; // for fast moving
     setUpdateIntervalForType(SensorTypes.accelerometer, intervals);
     setUpdateIntervalForType(SensorTypes.gyroscope, intervals);
+    setUpdateIntervalForType(SensorTypes.magnetometer, intervals);
     this.accelerometer = accelerometer.subscribe(({ x, y, z, timestamp }) => {
       let data = {x, y, z};
       this.logicManager.saveAccelometerData(data); 
@@ -124,11 +125,16 @@ export default class InitScreen extends Screen{
         let data = {x, y, z};
         this.logicManager.saveGyroscopeData(data);
     });
+    this.magnetometer = magnetometer.subscribe(({ x, y, z, timestamp }) => {
+      let data = {x, y, z};
+      this.logicManager.saveMagnometer(data);
+    });
   }
 
   unsubscribeSensors() {
     this.accelerometer.unsubscribe();
     this.gyroscope.unsubscribe();
+    this.magnetometer.unsubscribe;
   }
 
   /**
@@ -190,7 +196,6 @@ export default class InitScreen extends Screen{
               <View>
                 <Button title='Send Data' onPress={onClickSend}/>
               </View>
-              
             </View>;
   }
 

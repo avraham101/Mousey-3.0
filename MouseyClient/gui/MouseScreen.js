@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, Button, StyleSheet, ImageBackground, TouchableOpacity, Image} from 'react-native';
-import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope, } from "react-native-sensors";
+import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope} from "react-native-sensors";
 import Screen from './Screen';
 
 export default class MouseScreen extends Screen{

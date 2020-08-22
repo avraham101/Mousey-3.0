@@ -113,6 +113,7 @@ class ModelHandler:
                 print(e)
         return None
 
+# tester:
 # a = ModelHandler(5, 'model16.h5')
 # a.insert(1, 1, 1, 1, 1, 1)
 # a.insert(2, 2, 2, 2, 2, 2)

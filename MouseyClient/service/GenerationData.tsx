@@ -14,12 +14,25 @@ export interface Gyroscope {
   z: number,
 }
 
+export interface Angle {
+  tag: 'Angle',
+  angle: number,
+}
+
 export const createAccelometer = (x:number, y:number, z:number):Accelometer => {
   return {tag:'Accelometer',x:x,y:y,z:z};
 }
 
 export const createGyroscope = (x:number, y:number, z:number):Gyroscope => {
   return {tag:'Gyroscope',x:x,y:y,z:z};
+}
+
+export const createEngle = (x:number, y:number, z:number):Angle => {
+  let angle:number = Math.atan2(y,x);
+  angle = angle * (180 / Math.PI);
+  angle += 90;
+  angle = (angle+360) % 360;
+  return {tag:'Angle', angle:angle};
 }
 
 export const sameSensorData = (a:Sensor, b:Sensor, level:number): Boolean => {

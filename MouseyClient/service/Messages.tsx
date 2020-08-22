@@ -3,8 +3,8 @@ import { Platform } from "react-native";
 export type Message = Boradcast | Server2Client | Client2Server;
 
 type Boradcast = SearchMsg;
-type Server2Client = ConnectMsg;
-type Client2Server = FoundMsg | GenerationMsg | MouseClickMsg | MouseMove;
+type Server2Client = ConnectMsg | ReciveSplitMsg;
+type Client2Server = FoundMsg | GenerationMsg | MouseClickMsg | MouseMoveMsg | SplitMsg;
 
 //------------------------------------------ libary functions -----------------------------------------------
 function padString(str:string, num:number) {
@@ -15,12 +15,14 @@ function padString(str:string, num:number) {
 }
 
 //opcodes:
-var SEARCH_MSG = 19;
-var FOUND_MSG = 20;
-var CONNECT_MSG = 21;
-var GENERATION_MSG = 22;
-var MOUSE_CLICK_MGS = 23;
-var MOUSE_MOVE_MSG = 24;
+export var SEARCH_MSG = 19;
+export var FOUND_MSG = 20;
+export var CONNECT_MSG = 21;
+export var GENERATION_MSG = 22;
+export var MOUSE_CLICK_MGS = 23;
+export var MOUSE_MOVE_MSG = 24;
+export var SPLIT_MSG = 29;
+export var RECIVE_SPLIT_MSG = 30;
 
 //----------------------------------------------- interfaces -----------------------------------------------
 interface SearchMsg {
@@ -69,12 +71,28 @@ interface MouseClickMsg {
     toString: ()=>string,
 }
 
-interface MouseMove {
-    tag:'MouseMove',
+interface MouseMoveMsg {
+    tag:'MouseMoveMsg',
     opcode:number,
     data: any,
     isReady : () => boolean,
     toString: ()=> string,
+}
+
+interface SplitMsg {
+    tag:'SplitMsg',
+    opcode:number,
+    index: number,
+    total:number,
+    size: number,
+    data: any,
+    isReady: () => boolean,
+    toString: () => string,
+}
+
+interface ReciveSplitMsg {
+    tag:'ReciveSplitMsg',
+    opcode:number
 }
 
 
@@ -84,7 +102,9 @@ export const isFoundMsg = (x:any):x is FoundMsg => x.tag === "FoundMsg";
 export const isConnectMsg = (x:any):x is ConnectMsg => x.tag === "ConnectMsg";
 export const isGenerationMsg = (x:any):x is GenerationMsg => x.tag === "GenerationMsg";
 export const isMouseClickMsg = (x:any):x is MouseClickMsg => x.tag === 'MouseClickMsg';
-export const isMouseMoveMsg = (x:any):x is MouseMove => x.tag === 'MouseMove';
+export const isMouseMoveMsgMsg = (x:any):x is MouseMoveMsg => x.tag === 'MouseMoveMsg';
+export const isSplitMsg = (x:any): x is SplitMsg => x.tag === 'SplitMsg';
+export const isReciveSpliteMsg = (x:any): x is ReciveSplitMsg => x.tag === 'ReciveSplitMsg'
 
 //-------------------------------------------- constractors -----------------------------------------------
 export const createSearchMsg = (key:string):SearchMsg => {
@@ -161,8 +181,8 @@ export const createMouseClickMsg = (button:string, state:boolean):MouseClickMsg 
     return msg;
 }
 
-export const createMouseMoveMsg = (data:any): MouseMove => {
-    let msg:MouseMove = {tag:'MouseMove', opcode:MOUSE_MOVE_MSG, data:data, isReady:null, toString:null};
+export const createMouseMoveMsg = (data:any): MouseMoveMsg => {
+    let msg:MouseMoveMsg = {tag:'MouseMoveMsg', opcode:MOUSE_MOVE_MSG, data:data, isReady:null, toString:null};
     msg.isReady = ():boolean => true;
     msg.toString = ():string => {
         let plainText:string = String.fromCharCode(msg.opcode);
@@ -172,4 +192,40 @@ export const createMouseMoveMsg = (data:any): MouseMove => {
         return plainText;
     }
     return msg;
+}
+
+const createSplitMsg = (data: any, index: number, total:number, size:number):SplitMsg => {
+    let msg:SplitMsg = {tag:'SplitMsg', opcode:SPLIT_MSG, index:index, total:total, size:size, data:data, isReady:null, toString:null};
+    msg.isReady = ():boolean => true;
+    msg.toString =  ():string => {
+        let plainText:string = String.fromCharCode(msg.opcode);
+        plainText += padString(''+msg.index, 10);
+        plainText += padString(''+msg.total, 10);
+        plainText += padString(''+msg.size, 10);
+        plainText += data;
+        return plainText;
+    }
+    return msg;
+};
+
+export const createSplitMsgs = (msg: Message):SplitMsg[] => {
+    let output:SplitMsg[] = [];
+    let plainText:string = msg.toString();
+    let split:number = Math.ceil(plainText.length/65505);
+    console.log('splited msg to N: '+split);
+    while(plainText.length%split!=0) {
+        plainText+=' ';
+    }
+    let size:number = plainText.length;
+    let part:number = size/split;
+    let data:string = '';
+    for(let i:number =0; i<split; i+=1) {
+        data = plainText.slice(i*part,(i+1)*part);
+        output.push(createSplitMsg(data,i,split,data.length));
+    }
+    return output;
+} 
+
+export const createReciveSplitMsg = ():ReciveSplitMsg => {
+    return {tag:'ReciveSplitMsg', opcode:RECIVE_SPLIT_MSG};
 }

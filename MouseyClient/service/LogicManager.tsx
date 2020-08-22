@@ -53,15 +53,6 @@ export default class LogicManager {
     return this.getInitState();
   }
 
-  /**
-   * TODO NEED TO DELETE THIS
-   * the function save the accelometer data at init stage.
-   * @param param0 - the data
-   */
-  old_saveAccelometerData({x,y,z}:{x:number,y:number,z:number}, promise:(state:string)=>void):void {
-    this.generationHandler.old_addAccelometer({x,y,z}, promise);
-  }
-
   /** 
    * the function save the accelometer data at init stage.
    * @param param0 - the data
@@ -76,6 +67,14 @@ export default class LogicManager {
    */
   saveGyroscopeData({x,y,z}:{x:number,y:number,z:number}):void {
     this.generationHandler.addGyroscope({x,y,z});
+  }
+
+  /**
+   * The function save the magnometer data at init stage
+   * @param param0 - the data
+   */
+  saveMagnometer({x,y,z}:{x:number,y:number,z:number}):void {
+    this.generationHandler.addAngle({x,y,z});
   }
 
   /**
