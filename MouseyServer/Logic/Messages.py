@@ -64,10 +64,9 @@ class GenerationMessage(Message):
     def create_data_frame(self):
         lst = []
         columns = ['tag', 'accelometer_x', 'accelometer_y', 'accelometer_z',
-                   'gyroscope_x', 'gyroscope_y', 'gyroscope_z', 'angle', 'speed']
+                   'gyroscope_x', 'gyroscope_y', 'gyroscope_z', 'angle', 'diff']
         for state in self.data:
             tag = state['tag'].lower()
-            speed = state['speed']
             accs = state['accelometers']
             gyroes = state['gyroscopes']
             angles = state['angels']
@@ -76,7 +75,8 @@ class GenerationMessage(Message):
                 acc = accs[i]
                 gyro = gyroes[i]
                 angle = angles[i]
-                arr = [tag, acc['x'], acc['y'], acc['z'], gyro['x'], gyro['y'], gyro['z'], angle['angle'], speed]
+                arr = [tag, acc['x'], acc['y'], acc['z'], gyro['x'], gyro['y'], gyro['z'],
+                       angle['angle'], angle['diff']]
                 lst.append(arr)
         return pd.DataFrame(lst, columns=columns)
 

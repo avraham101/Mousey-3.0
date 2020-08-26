@@ -6,6 +6,8 @@ import {createFoundMsg, isSearchMsg, isConnectMsg, createGenerationMsg, createSp
 var port_mousey = undefined;
 var address_mousey = undefined;
 var MAX_UDP_SIZE = 65000;
+var lisener = null;
+
 export default class ConnectionHandler {
 
   constructor(port) {
@@ -13,6 +15,7 @@ export default class ConnectionHandler {
     this.socket = dgram.createSocket('udp4'); 
     this.socket.bind(1250); 
     this.key_toServer = undefined;
+    this.addLisenersMousey();
   } 
 
   broadcast = (promise) => {
@@ -74,6 +77,17 @@ export default class ConnectionHandler {
       });
   }
   
+  addLisenersMousey = () => {
+    let encodeco = this.encodeco;
+    console.log('HERE 1');
+    this.socket.on('message', function(msg, senderInfo) {
+      if(lisener!=null) {
+        msg = encodeco.decode(msg);
+        lisener(msg,senderInfo);
+      }
+    });
+  }
+
   sendGenerationAnalayze = (data) => {
     let encodeco = this.encodeco;
     let id = getUniqueId();
@@ -87,13 +101,20 @@ export default class ConnectionHandler {
         if(msgs.length > index) {
           console.log('send split msg '+index);
           this.send(msgs[index]);
-          this.socket.on('message', function(msg, senderInfo) {
-            msg = encodeco.decode(msg);
+          lisener = (msg, senderInfo) => {
+            console.log('\t inside lisener splitMsg')
             if(isReciveSpliteMsg(msg)) {
-              console.log('recived Recived Split Msg '+index);
+              console.log('\t >> recived Recived Split Msg '+index);
               nextMsg(msgs, index+1); 
             }
-          });
+          };
+          // this.socket.on('message', function(msg, senderInfo) {
+          //   msg = encodeco.decode(msg);
+          //   if(isReciveSpliteMsg(msg)) {
+          //     console.log('recived Recived Split Msg '+index);
+          //     nextMsg(msgs, index+1); 
+          //   }
+          // });
         }
       }
       nextMsg(msgs,0);

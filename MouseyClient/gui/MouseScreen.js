@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, Button, StyleSheet, ImageBackground, TouchableOpacity, Image} from 'react-native';
 import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope} from "react-native-sensors";
+import Menu from './Components/Menu';
 import Screen from './Screen';
 
 export default class MouseScreen extends Screen{
@@ -8,8 +9,6 @@ export default class MouseScreen extends Screen{
   constructor(handler, logicManager) {
     super(handler);
     this.logicManager = logicManager;
-    this.menuOn = false; 
-    this.clickMenu = this.clickMenu.bind(this);
     this.clickLeft = this.clickLeft.bind(this);
     this.realseLeft = this.realseLeft.bind(this);
     this.clickRight = this.clickRight.bind(this);
@@ -17,11 +16,6 @@ export default class MouseScreen extends Screen{
     this.subscribeSensors = this.subscribeSensors.bind(this);
     this.subscribeSensors();
   };
-
-  clickMenu() {
-    this.menuOn = !this.menuOn;
-    this.handler.refresh();
-  }
 
   clickLeft() {
     this.logicManager.sendClickLeftDown();
@@ -59,57 +53,15 @@ export default class MouseScreen extends Screen{
     this.gyroscope.unsubscribe();
   }
 
-
-  renderMenu() {
-    if(this.menuOn)
-      return <View style={{zIndex:1, position:'absolute', left:'65%', right:'2%',top:'5%', bottom:'8%', 
-                          borderTopLeftRadius:30, backgroundColor: 'rgba(1, 29, 69, 0.68)',}}>
-              <View style={{flex:1}}/>
-              <TouchableOpacity style={{flex:2, margin:'6%'}}>
-                <Image source={require('./img/Button_Mousey.png')} resizeMode='contain'/>
-              </TouchableOpacity>
-              <TouchableOpacity style={{flex:2, margin:'6%'}}>
-                <Image source={require('./img/Button_Pad.png')} resizeMode='contain'/>
-              </TouchableOpacity>
-              <TouchableOpacity style={{flex:2, margin:'6%'}}>
-                <Image source={require('./img/Button_Files.png')} resizeMode='contain'/>
-              </TouchableOpacity>
-              <TouchableOpacity style={{flex:2, margin:'6%'}}>
-                <Image source={require('./img/Button_Logout.png')} resizeMode='contain'/>
-              </TouchableOpacity>
-               
-             </View> 
-  }
-
-  renderMenuButton() {
-    if(this.menuOn)
-      return (
-        <TouchableOpacity onPress={this.clickMenu} style={{flex:1, zIndex:1, margin:'2%', backgroundColor:'#4A94FC', 
-                          borderColor:'black', borderWidth:1, borderRadius:50,}}>
-          <Text style={{textAlign:'center', marginTop:'25%', color:'white' }}> X </Text>
-        </TouchableOpacity>
-      );
-    return (
-      <TouchableOpacity onPress={this.clickMenu} style={{flex:1, margin:'2%', backgroundColor:'#4F7495', borderColor:'black', 
-                        borderWidth:1, borderRadius:50,}}>
-        <Text style={{textAlign:'center', marginTop:'25%', color:'white' }}> Menu </Text>
-      </TouchableOpacity>
-    ); 
-  }
-
   render = () => {
     return( 
       <ImageBackground source={require('./img/Mousey_Screen.png')} style={styles.container}>
-          {this.renderMenu()}
-          <View style={{flex:1,flexDirection:'row-reverse'}}> 
-            {this.renderMenuButton()}
-            <View style={{flex:5}}/>
-          </View>
+          <Menu handler={this.handler}/>
+          <View style={{flex:1}}/>
           <View style={{flex:3, flexDirection:'row-reverse', backgroundColor:''}}>
             <TouchableOpacity onPressIn={this.clickLeft} onPressOut={this.realseLeft} style={{marginRight:'3%', flex:3, 
                               backgroundColor:'#809EC6',  borderColor:'#BBD6EE', borderLeftWidth:1, borderRightWidth:5, 
                               borderTopRightRadius:100}}>
-                                        <Text> L </Text>
             </TouchableOpacity>
             <TouchableOpacity style={{marginLeft:'1%', marginRight:'1%', flex:1, backgroundColor:'#809EC6',  borderColor:'#BBD6EE', 
                               borderWidth:1, borderRadius:100}}>

@@ -7,7 +7,7 @@ import { State, Dir,
          createEmptyDown, createEmptyUp, createEmptyRight, createEmptyLeft, createEmptyUpRight, createEmptyDownLeft, 
          createEmptyUpLeft, createDone, createError, createReady, isDone, createStop, createEmptyDownRight,
          createEmptyNed} from './GenerationState';
-import { createAccelometer, createGyroscope, createEngle,
+import { createAccelometer, createGyroscope, createEngle, createEngleWithPrev,
          Accelometer, sameSensorData, Gyroscope, Angle} from './GenerationData';
 
 export default class GenerationHandler {
@@ -17,6 +17,7 @@ export default class GenerationHandler {
   data:Dir[];
   samePointCounter:number;
   treshold:number;
+  prevAngle:Angle;
 
   constructor(connectionHandler:ConnectionHandler) {
     this.connectionHandler = connectionHandler;
@@ -24,6 +25,7 @@ export default class GenerationHandler {
     this.data = [];
     this.samePointCounter = 0;
     this.treshold = 2;
+    this.prevAngle = null;
   }
 
   /**
@@ -63,9 +65,16 @@ export default class GenerationHandler {
    */
   addAngle({x,y,z}:{x:number,y:number,z:number}):void {
     if(isDir(this.state)) {
-      let current:Angle = createEngle(x,y,z);
-      //console.log(current.angle);
+      let current:Angle = null;
+      if(this.prevAngle == null) {
+        current = createEngle(x,y,z);
+      }
+      else {
+        current = createEngleWithPrev(x,y,z, this.prevAngle.angle)
+      }
+      this.prevAngle = current;
       this.state.angels.push(current);
+      
     }
   }
 
