@@ -148,4 +148,18 @@ export default class LogicManager {
   sendMouseMove() {
     this.mouseyHandler.sendMouseMove();
   }
+
+  /**
+   * The function send Touch Move msg to the server
+   */
+  sendTouchMove(x:number, y:number, last:boolean) {
+    this.mouseyHandler.sendTouchMove(x,y,last);
+  }
+
+  /**
+   * The function send Roller Movment msg to the server 
+   */
+  sendRoller(rollerSpeed: number) {
+    this.mouseyHandler.sendRoller(rollerSpeed);
+  }
 }

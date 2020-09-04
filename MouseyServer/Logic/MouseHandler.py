@@ -16,6 +16,7 @@ class MouseHandler:
     def __init__(self, modelHandler):
         # self.modelHandler = ModelHandler(5, '.\Logic\model16.h5')
         self.modelHandler = modelHandler
+        self.prevTouch = None
 
     def mouseClick(self, msg):
         tag = None
@@ -32,6 +33,7 @@ class MouseHandler:
         win32api.mouse_event(tag, x, y, 0, 0)
 
     def mouseMove(self, msg):
+        self.prevTouch = None
         ax, ay, az = msg.getAcc()
         gx, gy, gz = msg.getGyro()
         self.modelHandler.insert(ax, ay, az, gx, gy, gz)
@@ -63,6 +65,23 @@ class MouseHandler:
             return -sp, 0
         # elif res == 'up':
         return 0, -sp
+
+    def touchMove(self, msg):
+        if msg.isItLastMove():
+            self.prevTouch = None
+            return
+        if self.prevTouch is not None:
+            px, py = self.prevTouch
+            self.prevTouch = msg.getTouch()
+            print('px', px, 'py', py)
+            vx = msg.getX() - px
+            vy = msg.getY() - py
+            print('vx', vx, 'vy', vy)
+            x, y = win32api.GetCursorPos()
+            print('x', x, 'y', y)
+            win32api.SetCursorPos((x + int(vx), y + int(vy)))
+        else:
+            self.prevTouch = msg.getTouch()
 
 class ModelHandler:
 

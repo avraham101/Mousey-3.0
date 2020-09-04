@@ -38,8 +38,8 @@ export default class Menu extends Component{
     if(this.menuOn) {
       return (
         <TouchableOpacity onPress={this.clickMenu} style={{zIndex:1, height:'11%', width:'90%', backgroundColor:'#4A94FC', borderColor:'black', 
-                          borderWidth:1,}}>
-          <Text style={{textAlign:'center', marginTop:'15%', color:'white' }}> X </Text>
+                          borderWidth:1, borderTopLeftRadius:25, borderTopRightRadius:25}}>
+          <Text style={{textAlign:'center', marginTop:'15%', color:'white' }}> ... </Text>
         </TouchableOpacity>
       ); 
     }
@@ -54,7 +54,7 @@ export default class Menu extends Component{
   render = () => {
     if(!this.menuOn) {
       return (
-      <View style={{position:'absolute', right:'2%',top:'2%', width:'20%', height:'10%'}}>
+      <View style={{position:'absolute', right:'2%',top:'2%', width:'18%', height:'9%'}}>
         {this.renderMenuButton()}
       </View>);
     }

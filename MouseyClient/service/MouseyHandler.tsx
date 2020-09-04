@@ -1,4 +1,4 @@
-import {Message, createMouseClickMsg, createMouseMoveMsg} from './Messages';
+import {Message, createMouseClickMsg, createMouseMoveMsg, createTouchMsg, createRollerMsg} from './Messages';
 import ConnectionHandler from './ConnectionHandler';
 import { createAccelometer, createGyroscope, 
          Accelometer, sameSensorData, Gyroscope} from './GenerationData';
@@ -61,6 +61,25 @@ export default class MouseyHandler {
   addAcceleration({x,y,z}:{x:number,y:number,z:number}):void {
     let gyro:Gyroscope = createGyroscope(x,y,z);
     this.gyroQueue.push(gyro);
+  }
+
+  /**
+   * The function send Mouse move msg to the server
+   * @param x the cordinate x
+   * @param y the cordinate y
+   */
+  sendTouchMove(x:number,y:number, last:boolean):void {
+    let msg:Message = createTouchMsg(x,y,last);
+    this.connectionHandler.send(msg);
+  }
+
+  /**
+   * The function send Roller msg to the server
+   * @param rollerSpeed 
+   */
+  sendRoller(rollerSpeed: number) {
+    let msg:Message = createRollerMsg(rollerSpeed);
+    this.connectionHandler.send(msg);
   }
 
 }

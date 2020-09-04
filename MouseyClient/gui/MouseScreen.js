@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, Button, StyleSheet, ImageBackground, TouchableOpacity, Image} from 'react-native';
 import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope} from "react-native-sensors";
 import Menu from './Components/Menu';
+import Roller from './Components/Roller';
 import Screen from './Screen';
 
 export default class MouseScreen extends Screen{
@@ -63,9 +64,10 @@ export default class MouseScreen extends Screen{
                               backgroundColor:'#809EC6',  borderColor:'#BBD6EE', borderLeftWidth:1, borderRightWidth:5, 
                               borderTopRightRadius:100}}>
             </TouchableOpacity>
-            <TouchableOpacity style={{marginLeft:'1%', marginRight:'1%', flex:1, backgroundColor:'#809EC6',  borderColor:'#BBD6EE', 
+            <Roller handler={this.handler} logicManager={this.logicManager}/>
+            {/* <TouchableOpacity style={{marginLeft:'1%', marginRight:'1%', flex:1, backgroundColor:'#809EC6',  borderColor:'#BBD6EE', 
                               borderWidth:1, borderRadius:100}}>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity  onPressIn={this.clickRight} onPressOut={this.realseRight} style={{marginLeft:'3%', flex:3,  
                               backgroundColor:'#809EC6',  borderColor:'#BBD6EE', borderLeftWidth:5, borderRightWidth:1, 
                               borderTopLeftRadius:100}}>

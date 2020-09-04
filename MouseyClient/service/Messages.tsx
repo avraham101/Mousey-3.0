@@ -4,7 +4,7 @@ export type Message = Boradcast | Server2Client | Client2Server;
 
 type Boradcast = SearchMsg;
 type Server2Client = ConnectMsg | ReciveSplitMsg;
-type Client2Server = FoundMsg | GenerationMsg | MouseClickMsg | MouseMoveMsg | SplitMsg;
+type Client2Server = FoundMsg | GenerationMsg | MouseClickMsg | MouseMoveMsg | SplitMsg | TouchMsg | RollerMsg;
 
 //------------------------------------------ libary functions -----------------------------------------------
 function padString(str:string, num:number) {
@@ -21,6 +21,8 @@ export var CONNECT_MSG = 21;
 export var GENERATION_MSG = 22;
 export var MOUSE_CLICK_MGS = 23;
 export var MOUSE_MOVE_MSG = 24;
+export var TOUCH_MSG = 25;
+export var ROLLER_MSG = 26;
 export var SPLIT_MSG = 29;
 export var RECIVE_SPLIT_MSG = 30;
 
@@ -95,6 +97,23 @@ interface ReciveSplitMsg {
     opcode:number
 }
 
+interface TouchMsg {
+    tag:'TouchMsg',
+    opcode:number,
+    x:number,
+    y:number,
+    last:boolean,
+    isReady:() => boolean,
+    toString:() => string,
+}
+
+interface RollerMsg {
+    tag:'RollerMsg',
+    opcode:number,
+    speed:number,
+    isReady: () => boolean,
+    toString: () => string,
+}
 
 //----------------------------------------------- predicats -----------------------------------------------
 export const isSearchMsg = (x:any):x is SearchMsg => x.tag === "SearchMsg";
@@ -104,7 +123,9 @@ export const isGenerationMsg = (x:any):x is GenerationMsg => x.tag === "Generati
 export const isMouseClickMsg = (x:any):x is MouseClickMsg => x.tag === 'MouseClickMsg';
 export const isMouseMoveMsgMsg = (x:any):x is MouseMoveMsg => x.tag === 'MouseMoveMsg';
 export const isSplitMsg = (x:any): x is SplitMsg => x.tag === 'SplitMsg';
-export const isReciveSpliteMsg = (x:any): x is ReciveSplitMsg => x.tag === 'ReciveSplitMsg'
+export const isReciveSpliteMsg = (x:any): x is ReciveSplitMsg => x.tag === 'ReciveSplitMsg';
+export const isTouchMsg = (x:any): x is TouchMsg => x.tag === 'TouchMsg';
+export const isRollerMsg = (x:any): x is RollerMsg => x.tag === 'RollerMsg';
 
 //-------------------------------------------- constractors -----------------------------------------------
 export const createSearchMsg = (key:string):SearchMsg => {
@@ -228,4 +249,33 @@ export const createSplitMsgs = (msg: Message):SplitMsg[] => {
 
 export const createReciveSplitMsg = ():ReciveSplitMsg => {
     return {tag:'ReciveSplitMsg', opcode:RECIVE_SPLIT_MSG};
+}
+
+export const createTouchMsg = (x:number, y:number, last:boolean):TouchMsg => {
+    let msg:TouchMsg = {tag:'TouchMsg', opcode:TOUCH_MSG, x:x, y:y, last:last, isReady:null, toString:null};
+    msg.isReady = () => true;
+    msg.toString = ():string => {
+        let plainText:string = String.fromCharCode(msg.opcode);
+        plainText += padString(''+last,10);
+        let data = {x:msg.x, y:msg.y, last:msg.last};
+        let json = JSON.stringify(data);
+        plainText += padString(''+json.length,10);
+        plainText += json;
+        return plainText;
+    }
+    return msg;
+}
+
+export const createRollerMsg = (speed:number):RollerMsg => {
+    let msg:RollerMsg = {tag:'RollerMsg', opcode:ROLLER_MSG, speed:speed, isReady:null, toString:null};
+    msg.isReady = () => true;
+    msg.toString = ():string => {
+        let plainText:string = String.fromCharCode(msg.opcode);
+        let data = {speed:speed};
+        let json = JSON.stringify(data);
+        plainText += padString(''+json.length,10);
+        plainText += json;
+        return plainText;
+    };
+    return msg;
 }

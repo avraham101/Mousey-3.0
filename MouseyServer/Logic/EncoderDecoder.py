@@ -32,6 +32,8 @@ class EncoderDecoder:
             return self.decodeMouseMoveMsg(buffer)
         elif opCode == chr(Messages.SPLIT_OPCODE):
             return self.decodeSplitMsg(buffer)
+        elif opCode == chr(Messages.TOUCH_MOVE_OPCODE):
+            return self.decodeToouchMoveMsg(buffer)
         return None
 
     def decodeFoundMsg(self, buffer):
@@ -88,6 +90,24 @@ class EncoderDecoder:
         data = str(data, "utf-8")
         data = json.loads(data)
         return Messages.MouseMove(data)
+
+    def decodeToouchMoveMsg(self, buffer):
+        offset = 1
+        last, rest = struct.unpack_from('10sc', buffer, offset)
+        last = str(last, "utf-8")
+        last = cleanString(last)
+        if last == 'true':
+            last = True
+        else:
+            last = False
+        offset += 10
+        size, rest = struct.unpack_from('10sc', buffer, offset)
+        size = str(size, "utf-8")
+        size = int(cleanString(size))
+        size, data = struct.unpack_from('10s' + str(size) + 's', buffer, offset)
+        data = str(data, "utf-8")
+        data = json.loads(data)
+        return Messages.TouchMoveMsg(last,data)
 
     def decodeSplitMsg(self, buffer):
         offset = 1

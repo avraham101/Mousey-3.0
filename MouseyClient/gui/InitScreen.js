@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, Button, StyleSheet, ImageBackground, Image, TouchableOpacity} from 'react-native';
 import Screen from './Screen';
 import MouseScreen from './MouseScreen';
+import TouchPadScreen from './TouchPadScreen';
 import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope, magnetometer} from "react-native-sensors";
 import LogicManager from '../service/LogicManager';
 
@@ -25,7 +26,8 @@ export default class InitScreen extends Screen{
    */
   render_yse_no =() => {
     let noClick = () => {
-      this.handler.navigate(new MouseScreen(this.handler,this.logicManager));
+      this.handler.navigate(new TouchPadScreen(this.handler,this.logicManager));
+      //this.handler.navigate(new MouseScreen(this.handler,this.logicManager));
     }
     let yesClick = () => {
       this.yesNoOn = false;

@@ -79,7 +79,6 @@ export default class ConnectionHandler {
   
   addLisenersMousey = () => {
     let encodeco = this.encodeco;
-    console.log('HERE 1');
     this.socket.on('message', function(msg, senderInfo) {
       if(lisener!=null) {
         msg = encodeco.decode(msg);
