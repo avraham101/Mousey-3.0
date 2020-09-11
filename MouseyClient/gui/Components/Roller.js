@@ -7,34 +7,35 @@ export default class Roller extends Component{
     super(props);
     this.onRollerMove = this.onRollerMove.bind(this);
     this.onRollerEnd = this.onRollerEnd.bind(this);
-    this.prevRollerY = null;
+    this.prevRoll = null;
     this.rollerSpeed = null;
   };
 
   onRollerMove = (e) => {
-    let treshold = 0.25;
+    let treshold = 0.3;
+    let tresholdTime = 50;
+    console.log(e.nativeEvent.timestamp);
     // console.log(e.nativeEvent.pageY);
-    if(this.prevRollerY != null) {
-      if(e.nativeEvent.pageY - this.prevRollerY <= treshold && e.nativeEvent.pageY - this.prevRollerY >= -treshold) {
+    if(this.prevRoll != null) {
+      if(e.nativeEvent.timestamp - this.prevRoll.timestamp > tresholdTime) {
+        this.rollerSpeed = null;
+      }
+      else if(e.nativeEvent.pageY - this.prevRoll.pageY <= treshold && e.nativeEvent.pageY - this.prevRoll.pageY >= -treshold) {
         this.rollerSpeed = null;
       }
       else {
         // if(e.nativeEvent.pageY - this.prevRollerY > treshold) { //Moving roller Down
-        //   console.log('Roller Down');
-        // }
         // else if(e.nativeEvent.pageY - this.prevRollerY < -treshold) { //Moving Roller Up
-        //   console.log('Roller Up');
-        // }
-        this.rollerSpeed = e.nativeEvent.pageY - this.prevRollerY;
-        this.props.logicManger.sendRoller(this.rollerSpeed);
-        // console.log('speed '+this.rollerSpeed);
+        this.rollerSpeed = e.nativeEvent.pageY - this.prevRoll.pageY;
+        this.props.logicManager.sendRoller(this.rollerSpeed);
       }
     }
-    this.prevRollerY = e.nativeEvent.pageY;
+    this.prevRoll = e.nativeEvent;
     this.props.handler.refresh();
   }
-
+  
   onRollerEnd = (e) => {
+    this.prevRoll = null;
     this.rollerSpeed = null;
     this.props.handler.refresh();
   }
@@ -50,7 +51,10 @@ export default class Roller extends Component{
   }
 
   render() {
-    return (<View style={{flex:1, backgroundColor:'#19336B'}} onTouchMove = {this.onRollerMove} onTouchEnd={this.onRollerEnd}>
+    return (<View style={{flex:1, backgroundColor:'#19336B'}} 
+                  onTouchMove={this.onRollerMove} onTouchEnd={this.onRollerEnd}
+                  onMouseLeave={this.onRollerEnd}
+                  onMouseOut={this.onRollerEnd}>
               {this.renderRollerTag()}
               <View style={{flex:3}}/>
             </View>);

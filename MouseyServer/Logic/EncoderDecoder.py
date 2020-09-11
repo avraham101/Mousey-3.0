@@ -34,6 +34,8 @@ class EncoderDecoder:
             return self.decodeSplitMsg(buffer)
         elif opCode == chr(Messages.TOUCH_MOVE_OPCODE):
             return self.decodeToouchMoveMsg(buffer)
+        elif opCode == chr(Messages.ROLLER_MOVE_OPCODE):
+            return self.decodeRollerMsg(buffer)
         return None
 
     def decodeFoundMsg(self, buffer):
@@ -125,6 +127,16 @@ class EncoderDecoder:
         size, data = struct.unpack_from('10s' + str(size) + 's', buffer, offset)
         data = str(data, "utf-8")
         return Messages.SplitMsg(index, total, data)
+
+    def decodeRollerMsg(self, buffer):
+        offset = 1
+        size, data = struct.unpack_from('10sc', buffer, offset)
+        size = str(size, "utf-8")
+        size = int(cleanString(size))
+        size, data = struct.unpack_from('10s' + str(size) + 's', buffer, offset)
+        data = str(data, "utf-8")
+        data = json.loads(data)
+        return Messages.RollerMoveMsg(data)
 
     def decodeString(self, s):
         opCode = s[0]

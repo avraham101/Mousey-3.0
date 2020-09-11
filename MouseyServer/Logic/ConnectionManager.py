@@ -66,7 +66,8 @@ class ConnectionManager(Threads.Thread):
         elif msg.opcode == Messages.SPLIT_OPCODE:
             print('got splite msg -> ', msg.getIndex())
             self.executeSplitMsg(msg)
-
+        elif msg.opcode == Messages.ROLLER_MOVE_OPCODE:
+            self.mouseHandler.rollerMove(msg)
         else:
             return
 

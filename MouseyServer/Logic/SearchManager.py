@@ -54,11 +54,13 @@ class SearchManager(Threads.Thread):
     # The function send a broad cast to all phones in the area who want to connect
     # sending a public key
     def broadCast(self):
-        ip = ('10.0.0.255', 1250)
-        publicKey = 'send BroadCast to phones'
-        publicKey = hashlib.sha1(bytes(publicKey, 'utf-8')).hexdigest()
-        msg = Messages.SearchMessage(publicKey)
-        self.connectionHandler.sendMsg(msg, ip)
+        ips = self.connectionHandler.getMyBroadcastIps()
+        for address in ips:
+            ip = (address, 1250)
+            publicKey = 'send BroadCast to phones'
+            publicKey = hashlib.sha1(bytes(publicKey, 'utf-8')).hexdigest()
+            msg = Messages.SearchMessage(publicKey)
+            self.connectionHandler.sendMsg(msg, ip)
 
     # This is the running function of the thread
     def run(self):

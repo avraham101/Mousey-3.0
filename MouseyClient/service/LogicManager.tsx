@@ -2,16 +2,20 @@ import {Message} from './Messages';
 import ConnectionHandler from './ConnectionHandler';
 import GenerationHandler from './GenerationHandler';
 import MousetHandler from './MouseyHandler';
+import FileHandler from './FileHandler';
+
 export default class LogicManager {
 
   connectionHandler:ConnectionHandler;
   generationHandler:GenerationHandler;
   mouseyHandler:MousetHandler;
+  fileHandler:FileHandler;
 
   constructor() {
     this.connectionHandler = new ConnectionHandler(1250);
     this.generationHandler = new GenerationHandler(this.connectionHandler);
     this.mouseyHandler = new MousetHandler(this.connectionHandler);
+    this.fileHandler = new FileHandler(this.connectionHandler);
   }
 
   /**
@@ -161,5 +165,26 @@ export default class LogicManager {
    */
   sendRoller(rollerSpeed: number) {
     this.mouseyHandler.sendRoller(rollerSpeed);
+  }
+
+  /**
+   * The function return the Current Folder Name
+   */
+  getCurrentFolderName() {
+    return this.fileHandler.getCurrentName();
+  }
+
+  /**
+   * The function return the Current Folder Items (Content) 
+   */
+  getCurrentItems() {
+    return this.fileHandler.getCurrentItems();
+  }
+
+  /**
+   * The function move to the prev folder
+   */
+  moveToPrevFolder() {
+    this.fileHandler.moveToPrevFolder();
   }
 }

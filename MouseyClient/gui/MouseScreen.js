@@ -1,15 +1,20 @@
 import React from 'react';
-import {View, Text, Button, StyleSheet, ImageBackground, TouchableOpacity, Image} from 'react-native';
+import {View, Text, Button, StyleSheet, ImageBackground, Image} from 'react-native';
 import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope} from "react-native-sensors";
+import Screen from './Screen';
+import TouchPadScreen from './TouchPadScreen';
+import FilesScreen from './FilesScreen';
 import Menu from './Components/Menu';
 import Roller from './Components/Roller';
-import Screen from './Screen';
+import CustomButton from './Components/CustomButton';
 
 export default class MouseScreen extends Screen{
 
   constructor(handler, logicManager) {
     super(handler);
     this.logicManager = logicManager;
+    this.clickTouchPad = this.clickTouchPad.bind(this);
+    this.clickFileTransmit = this.clickFileTransmit.bind(this);
     this.clickLeft = this.clickLeft.bind(this);
     this.realseLeft = this.realseLeft.bind(this);
     this.clickRight = this.clickRight.bind(this);
@@ -17,6 +22,16 @@ export default class MouseScreen extends Screen{
     this.subscribeSensors = this.subscribeSensors.bind(this);
     this.subscribeSensors();
   };
+
+  clickTouchPad() {
+    this.unsubscribeSensors();
+    this.handler.navigate(new TouchPadScreen(this.handler, this.logicManager));
+  }
+
+  clickFileTransmit() {
+    this.unsubscribeSensors();
+    this.handler.navigate(new FilesScreen(this.handler, this.logicManager));
+  }
 
   clickLeft() {
     this.logicManager.sendClickLeftDown();
@@ -57,21 +72,16 @@ export default class MouseScreen extends Screen{
   render = () => {
     return( 
       <ImageBackground source={require('./img/Mousey_Screen.png')} style={styles.container}>
-          <Menu handler={this.handler}/>
+          <Menu handler={this.handler} clickTouchPad={this.clickTouchPad} clickFileTransmit={this.clickFileTransmit}/>
           <View style={{flex:1}}/>
           <View style={{flex:3, flexDirection:'row-reverse', backgroundColor:''}}>
-            <TouchableOpacity onPressIn={this.clickLeft} onPressOut={this.realseLeft} style={{marginRight:'3%', flex:3, 
-                              backgroundColor:'#809EC6',  borderColor:'#BBD6EE', borderLeftWidth:1, borderRightWidth:5, 
-                              borderTopRightRadius:100}}>
-            </TouchableOpacity>
+            <CustomButton handler={this.handler}  onTouchStart={this.clickLeft} onTouchEnd={this.realseLeft} 
+                            flex={3} marginRight={'3%'} borderTopRightRadius={100} borderLeftWidth={1} borderRightWidth={5}
+                            borderColor={'#BBD6EE'}  BASE_COLOR={'#809EC6'} CLICK_COLOR={'#599FFC'}/>
             <Roller handler={this.handler} logicManager={this.logicManager}/>
-            {/* <TouchableOpacity style={{marginLeft:'1%', marginRight:'1%', flex:1, backgroundColor:'#809EC6',  borderColor:'#BBD6EE', 
-                              borderWidth:1, borderRadius:100}}>
-            </TouchableOpacity> */}
-            <TouchableOpacity  onPressIn={this.clickRight} onPressOut={this.realseRight} style={{marginLeft:'3%', flex:3,  
-                              backgroundColor:'#809EC6',  borderColor:'#BBD6EE', borderLeftWidth:5, borderRightWidth:1, 
-                              borderTopLeftRadius:100}}>
-            </TouchableOpacity>
+            <CustomButton handler={this.handler} onTouchStart={this.clickRight} onTouchEnd={this.realseRight} 
+                          flex={3} marginLeft={'3%'} borderTopLeftRadius={100} borderLeftWidth={5} borderRightWidth={1}
+                          borderColor={'#BBD6EE'}  BASE_COLOR={'#809EC6'} CLICK_COLOR={'#599FFC'}/>
           </View>
           <View style={{flex:5, backgroundColor:''}}>
            

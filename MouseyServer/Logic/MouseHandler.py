@@ -32,6 +32,14 @@ class MouseHandler:
         x, y = win32api.GetCursorPos()
         win32api.mouse_event(tag, x, y, 0, 0)
 
+    def rollerMove(self, msg):
+        x, y = win32api.GetCursorPos()
+        speed = msg.getSpeed()
+        speed = int(speed)
+        win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, x, y, -speed*10, 0)
+        win32api.SetCursorPos((x, y + speed))
+        # print('moved roller')
+
     def mouseMove(self, msg):
         self.prevTouch = None
         ax, ay, az = msg.getAcc()
@@ -143,4 +151,9 @@ class ModelHandler:
 # a.insert(6, 6, 6, 6, 6, 6)
 # a.insert(7, 7, 7, 7, 7, 7)
 # print(a.predict())
+# print('done')
+# ------------------------------------------
+# x, y = win32api.GetCursorPos()
+# print('x', x, 'y', y)
+# win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, x, y, -1, 0)
 # print('done')

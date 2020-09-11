@@ -37,8 +37,12 @@ export default class ConnectionScreen extends Screen{
           <View style={{flex:2}}>
           </View>
           <View style={{flex:3}}>
-            <View style={{flex:3, paddingLeft:60, paddingTop: 45}}>
-              <Image source={require('./img/searching5.gif')}/>
+            <View style={{flex:1, paddingLeft:'10%', paddingTop: '15%'}}>
+              <Text style={{alignSelf:'center', paddingLeft:'10%'}}> Dont forget to connect to your local wifi </Text>
+            </View>
+            <View style={{flex:3, alignItems:'center'}}>
+              <Image source={require('./img/Search_p.png')}/>
+              <Text style={{alignSelf:'center',}}> Searching Mousey Server </Text>
             </View>
             <View style={{flex:1,  paddingLeft:60, paddingRight: 60}}>
               <Button title='Back' onPress={this.backClicked}/>

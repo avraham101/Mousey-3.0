@@ -8,6 +8,7 @@ GENERATION_OPCODE = 22
 MOUSE_CLICK_OPCODE = 23
 MOUSE_MOVE_OPCODE = 24
 TOUCH_MOVE_OPCODE = 25
+ROLLER_MOVE_OPCODE = 26
 SPLIT_OPCODE = 29
 RECIVE_SPLIT_OPCODE = 30
 
@@ -176,3 +177,13 @@ class TouchMoveMsg(Message):
 
     def getTouch(self):
         return self.x, self.y
+
+class RollerMoveMsg(Message):
+
+    def __init__(self, data):
+        super().__init__(ROLLER_MOVE_OPCODE)
+        self.speed = data['speed']
+
+    def getSpeed(self):
+        return self.speed
+
