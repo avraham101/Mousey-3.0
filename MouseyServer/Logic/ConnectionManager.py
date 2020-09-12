@@ -4,7 +4,7 @@ import threading as Threads
 from Logic import ConnectionHandler, Messages, EncoderDecoder
 from Logic.MouseHandler import MouseHandler
 from Presistent.PresistentHandler import PresistentGenerationHandler
-
+from Logic.FileHandler import FileHandler
 
 class ConnectionManager(Threads.Thread):
 
@@ -15,10 +15,11 @@ class ConnectionManager(Threads.Thread):
         self.deviceName = name
         self.battery = battery
         self.connectionHandler = connectionHandler
+        self.encoDeco = EncoderDecoder.EncoderDecoder()
         self.presistendGenrationHandler = PresistentGenerationHandler()
         self.mouseHandler = MouseHandler(modelHandler)
         self.splitHandler = None
-        self.encoDeco = EncoderDecoder.EncoderDecoder()
+        self.fileHandler = FileHandler()
 
     # The function connect to a phone by using private key
     def connect(self):
@@ -64,10 +65,12 @@ class ConnectionManager(Threads.Thread):
         elif msg.opcode == Messages.TOUCH_MOVE_OPCODE:
             self.mouseHandler.touchMove(msg)
         elif msg.opcode == Messages.SPLIT_OPCODE:
-            print('got splite msg -> ', msg.getIndex())
+            print('got split msg -> ', msg.getIndex())
             self.executeSplitMsg(msg)
         elif msg.opcode == Messages.ROLLER_MOVE_OPCODE:
             self.mouseHandler.rollerMove(msg)
+        elif msg.opcode == Messages.FILE_OPCODE:
+            self.fileHandler.saveFile(msg)
         else:
             return
 

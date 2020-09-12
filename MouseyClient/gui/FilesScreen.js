@@ -15,9 +15,11 @@ export default class FilesScreen extends Screen{
     this.clickMousey = this.clickMousey.bind(this);
     this.clickTouchPad = this.clickTouchPad.bind(this);
     this.clickPrevFolder = this.clickPrevFolder.bind(this);
+    this.clickNextFolder = this.clickNextFolder.bind(this);
     //send file properties
     this.selectedFile = null;
     this.selectedFileEvent = null;
+    this.sendFile = null;
     this.selectFile = this.selectFile.bind(this);
     this.moveSelectFile = this.moveSelectFile.bind(this);
     this.endSelectFile = this.endSelectFile.bind(this);
@@ -42,13 +44,26 @@ export default class FilesScreen extends Screen{
   }
 
   selectFile(e, file) {
-    this.selectedFile = file;
-    this.selectedFileEvent = e.nativeEvent;
+    if(file.tag!='Folder') {
+      this.selectedFile = file;
+      this.selectedFileEvent = e.nativeEvent;
+    }
+    else {
+      this.clickNextFolder(e, file);
+    }
+  }
+
+  clickNextFolder(e, item) {
+    if(item.tag == 'Folder') {
+      this.logicManager.moveToFolder(item.path);
+    }
   }
 
   moveSelectFile(e, fixed_y, send_line_y) {
     if(send_line_y > fixed_y) {
-      console.log('send file to computer ' + this.selectedFile.name);
+      let date = this.selectedFile.date.getDay()+'.'+this.selectedFile.date.getMonth()+'.'+this.selectedFile.date.getFullYear(); 
+      this.logicManager.sendFile(this.selectedFile.name, this.selectedFile.path, date, this.selectedFile.size, this.selectedFile.type);
+      this.sendFile = this.selectedFile;
       this.selectedFile = null;
       this.selectedFileEvent = null;
     }
@@ -71,20 +86,33 @@ export default class FilesScreen extends Screen{
     }
   }
 
+  refactorName(str, max=20) {
+    if(str.length > max) {
+      let prefix = str.slice(0, max-6); 
+      let sefix = str.slice(-5);
+      return prefix + ' ... '+sefix;
+    }
+    return str;
+  }
+
   renderItem(item, index) {
-    // return (<View key={index} style={{flexDirection:'row-reverse', margin:'1%', borderColor:'black', borderBottomWidth:1}}>
     return (<View key={index} style={{flexDirection:'row-reverse', margin:'1%', borderColor:'black', borderBottomWidth:1}}>
               <CustomButton handler={this.handler} flex={1} onTouchStart={(e)=>this.selectFile(e, item)}>
                 {this.renderLogo(item)}
               </CustomButton>
-              <View style={{flex:3, alignSelf:'flex-start', padding:'1%'}}>
-                <Text style={{fontFamily:'sans-serif', fontSize:18}}> {item.name} </Text>
-              </View>
-              <View style={{flex:2}}>
-                <Text style={{textAlign:'center', fontFamily:'sans-serif', fontSize:18}}> x-x-x </Text>
-              </View>
-              <View style={{flex:1}}>
-                <Text style={{textAlign:'center', fontFamily:'sans-serif', fontSize:18}}> {item.size} </Text>
+              <View style={{flex:6}}>
+                <View style={{flex:2}}>
+                  <Text style={{fontFamily:'sans-serif', fontSize:16, textAlign:'right'}}> {this.refactorName(item.name)} </Text>
+                </View>
+                <View style={{flex:1, flexDirection:'row-reverse'}}>
+                  <View style={{flex:1}}>
+                    <Text style={{textAlign:'right', fontFamily:'sans-serif', fontSize:14, color:'gray'}}>
+                      {item.date.getDay()}.{item.date.getMonth()}.{item.date.getFullYear()} </Text>
+                  </View>
+                  <View style={{flex:1}}>
+                    <Text style={{textAlign:'left', fontFamily:'sans-serif', fontSize:14, color:'gray'}}> {item.size} b </Text>
+                  </View>
+                </View>
               </View>
             </View>);
   }
@@ -123,15 +151,31 @@ export default class FilesScreen extends Screen{
                   zIndex={1} top={'5%'} height={'90%'} width={'100%'} position={'absolute'}> 
                   <View style={{ alignItems:'center', borderRadius:10, padding:'1%', backgroundColor:'#C8DDF1', borderColor:'black', borderWidth: 2,
                                  right:x, top:y}}>
-                                  <Text> {this.selectedFile.name} </Text>
-                                  {this.renderLogo(this.selectedFile)}
+                                  <Text> Selected: </Text>
+                                  <Text style={{color:'green'}}> {this.refactorName(this.selectedFile.name, 14)} </Text>
+                                  <Text style={{color:'gray'}}> {this.selectedFile.tag} </Text>
+                                  {/* {this.renderLogo(this.selectedFile)} */}
                                   <CustomButton handler={this.handler} onTouchStart={this.endSelectFile}
                                       margin={'1%'} BASE_COLOR='#0E83F0' CLICK_COLOR='white'>
                                     <Text style={{textAlign:'center', width:50, height:25}}> X </Text>
                                   </CustomButton>
                   </View>
               </CustomButton>);
-      // return <View style={{zIndex:1, right:'5%', top:'5%', height:'90%', width:'90%', position:'absolute', backgroundColor:'black'}}></View>
+    }
+  }
+
+  //TODO: new feature after selecting the file see the progress he sents to the server 
+  renderSendFile() {
+    if(this.sendFile!=null) {
+      return (<View style={{ alignSelf:'center', position:'absolute', top:'40%', width:'80%', backgroundColor:'white', 
+                  borderColor:'black', borderWidth:2, zIndex:1}}>
+                    <View style={{flex:1, textAlign:'center'}}>
+                      <Text> Sending File {this.sendFile.name} </Text>
+                    </View>
+                    <View style={{flex:1}}>
+                      <Text> Progress Bar </Text>
+                    </View>
+              </View>);
     }
   }
 
@@ -153,7 +197,6 @@ export default class FilesScreen extends Screen{
               </View>
               <CustomButton handler={this.handler} onTouchEnd={this.clickPrevFolder} height={'100%'} flex={1} alignSelf={'center'} borderColor={'black'} borderRightWidth={1} 
                     CLICK_COLOR={'white'}>
-                {/* <Image source={require('./img/back_p.png')}/> */}
                 <Text style={{textAlign:'center', paddingTop:'30%', fontSize:24}}> ... </Text>
               </CustomButton>
           </View>

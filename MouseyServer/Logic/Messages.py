@@ -9,6 +9,7 @@ MOUSE_CLICK_OPCODE = 23
 MOUSE_MOVE_OPCODE = 24
 TOUCH_MOVE_OPCODE = 25
 ROLLER_MOVE_OPCODE = 26
+FILE_OPCODE = 28
 SPLIT_OPCODE = 29
 RECIVE_SPLIT_OPCODE = 30
 
@@ -186,4 +187,26 @@ class RollerMoveMsg(Message):
 
     def getSpeed(self):
         return self.speed
+
+class FileMsg(Message):
+
+    def __init__(self, name, date, fileSize, data):
+        super().__init__(FILE_OPCODE)
+        self.name = name
+        self.date = date
+        self.fileSize = fileSize
+        self.data = data
+
+    def getName(self):
+        return self.name
+
+    def getType(self):
+       return self.name.split('.')[-1]
+
+    def getDate(self):
+        return self.date
+
+    def getFileData(self):
+        return self.data
+
 

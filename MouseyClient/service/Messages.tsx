@@ -1,10 +1,8 @@
-import { Platform } from "react-native";
-
 export type Message = Boradcast | Server2Client | Client2Server;
 
 type Boradcast = SearchMsg;
 type Server2Client = ConnectMsg | ReciveSplitMsg;
-type Client2Server = FoundMsg | GenerationMsg | MouseClickMsg | MouseMoveMsg | SplitMsg | TouchMsg | RollerMsg;
+type Client2Server = FoundMsg | GenerationMsg | MouseClickMsg | MouseMoveMsg | SplitMsg | TouchMsg | RollerMsg | FileMsg;
 
 //------------------------------------------ libary functions -----------------------------------------------
 function padString(str:string, num:number) {
@@ -23,6 +21,7 @@ export var MOUSE_CLICK_MGS = 23;
 export var MOUSE_MOVE_MSG = 24;
 export var TOUCH_MSG = 25;
 export var ROLLER_MSG = 26;
+export var FILE_MSG = 28;
 export var SPLIT_MSG = 29;
 export var RECIVE_SPLIT_MSG = 30;
 
@@ -115,6 +114,17 @@ interface RollerMsg {
     toString: () => string,
 }
 
+interface FileMsg {
+    tag:'FileMsg',
+    opcode:number,
+    name:string,
+    date:string,
+    fileSize:string,
+    content:string, //utf-8
+    isReady:()=>boolean,
+    toString:()=>string,
+}
+
 //----------------------------------------------- predicats -----------------------------------------------
 export const isSearchMsg = (x:any):x is SearchMsg => x.tag === "SearchMsg";
 export const isFoundMsg = (x:any):x is FoundMsg => x.tag === "FoundMsg";
@@ -126,6 +136,7 @@ export const isSplitMsg = (x:any): x is SplitMsg => x.tag === 'SplitMsg';
 export const isReciveSpliteMsg = (x:any): x is ReciveSplitMsg => x.tag === 'ReciveSplitMsg';
 export const isTouchMsg = (x:any): x is TouchMsg => x.tag === 'TouchMsg';
 export const isRollerMsg = (x:any): x is RollerMsg => x.tag === 'RollerMsg';
+export const isFileMsg = (x:any): x is FileMsg => x.tag === 'FileMsg';
 
 //-------------------------------------------- constractors -----------------------------------------------
 export const createSearchMsg = (key:string):SearchMsg => {
@@ -277,5 +288,20 @@ export const createRollerMsg = (speed:number):RollerMsg => {
         plainText += json;
         return plainText;
     };
+    return msg;
+}
+
+export const createFileMsg = (name:string, date:string, fileSize:string, content:string):FileMsg => {
+    let msg:FileMsg = {tag:'FileMsg', opcode:FILE_MSG, name:name, date:date, fileSize:fileSize, content:content, isReady:null, toString:null};
+    msg.isReady = ()=>true;
+    msg.toString = ():string =>{
+        let plainText:string = String.fromCharCode(msg.opcode);
+        plainText += padString(name,40);
+        plainText += padString(date,10);
+        plainText += padString(''+fileSize,15);
+        plainText += padString(''+content.length,20);
+        plainText += content;
+        return plainText;
+    }
     return msg;
 }

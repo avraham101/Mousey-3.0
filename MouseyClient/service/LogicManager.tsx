@@ -187,4 +187,24 @@ export default class LogicManager {
   moveToPrevFolder() {
     this.fileHandler.moveToPrevFolder();
   }
+
+  /**
+   * The function move to folder with the path
+   * @param path the folders path
+   */
+  moveToFolder(path) {
+    this.fileHandler.moveToFolder(path);
+  }
+
+   /**
+   * The function send the file to the server
+   * @param name the name of the file
+   * @param path the path to the file
+   * @param date the date the file created\last changed
+   * @param fileSize the size of the file in Bytes
+   * @param type the type of the file
+   */
+  sendFile(name:string, path:string, date:string, fileSize:string, type:string) {
+    this.fileHandler.sendFile(name,path, date, fileSize, type);
+  }
 }

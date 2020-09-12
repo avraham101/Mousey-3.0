@@ -36,6 +36,8 @@ class EncoderDecoder:
             return self.decodeToouchMoveMsg(buffer)
         elif opCode == chr(Messages.ROLLER_MOVE_OPCODE):
             return self.decodeRollerMsg(buffer)
+        elif opCode == chr(Messages.FILE_OPCODE):
+            return self.decodeFileMsg(buffer)
         return None
 
     def decodeFoundMsg(self, buffer):
@@ -138,14 +140,34 @@ class EncoderDecoder:
         data = json.loads(data)
         return Messages.RollerMoveMsg(data)
 
+    def decodeFileMsg(self, buffer):
+        offset = 1
+        name, rest = struct.unpack_from('40sc', buffer, offset)
+        name = cleanString(str(name, "utf-8"))
+        offset += 40
+        date, rest = struct.unpack_from('10sc', buffer, offset)
+        date = cleanString(str(date, "utf-8"))
+        offset += 10
+        fileSize, rest = struct.unpack_from('15sc', buffer, offset)
+        fileSize = cleanString(str(fileSize, "utf-8"))
+        offset += 15
+        size, data = struct.unpack_from('20sc', buffer, offset)
+        size = str(size, "utf-8")
+        size = int(cleanString(size))
+        size, data = struct.unpack_from('20s' + str(size) + 's', buffer, offset)
+        data = str(data, "utf-8")
+        return Messages.FileMsg(name, date, fileSize, data)
+
     def decodeString(self, s):
         opCode = s[0]
         if opCode == chr(Messages.GENERATION_OPCODE):
-            print('here 1')
             return self.decodeGenerationMsgFromString(s)
+        elif opCode == chr(Messages.FILE_OPCODE):
+            return self.decodeFileMsgFromString(s)
         return None
 
     def decodeGenerationMsgFromString(self, s):
+        print('here !! :D')
         offset = 1
         id = s[offset: offset + 40]
         id = cleanString(id)
@@ -156,6 +178,23 @@ class EncoderDecoder:
         data = s[offset: offset+size]
         data = json.loads(data)
         return Messages.GenerationMessage(id, data)
+
+    def decodeFileMsgFromString(self, s):
+        offset = 1
+        name = s[offset: offset + 40]
+        name = cleanString(name)
+        offset += 40
+        date = s[offset: offset + 10]
+        date = cleanString(date)
+        offset += 10
+        fileSize = s[offset: offset + 15]
+        fileSize = cleanString(fileSize)
+        offset += 15
+        size = s[offset: offset + 20]
+        size = int(cleanString(size))
+        offset += 20
+        data = s[offset: offset + size]
+        return Messages.FileMsg(name, date, fileSize, data)
 
 class WrongMsgRecived(Exception):
     """Wrong Msg recived, can't translate"""

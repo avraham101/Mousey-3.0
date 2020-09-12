@@ -1,27 +1,37 @@
+import { ReadDirItem } from "react-native-fs";
+
 //----------------------------------------------- interfaces -----------------------------------------------
 export type Item = Folder | File | Image;
 
 export interface Folder {
     tag: 'Folder',
-    size: number,
     name: string,
+    path: string,
+    prevPath: string, 
+    date: Date,
+    size: string,
     items: Item[], 
-    prev: Folder,
+    isFolderReady : ()=>boolean,
 }
 
 export interface File {
     tag:'File',
     name: string,
+    path: string,
     type: string,
-    size: number,
+    date: Date,
+    size: string,
     content: any,
+    isContentReady : ()=>boolean,
 }
 
 export interface Image {
     tag:'Image',
     name: string,
+    path: string,
     type: string,
-    size: number,
+    date: Date,
+    size: string,
     content: any,
 }
 
@@ -32,19 +42,31 @@ export const Image = (x:any):x is Image => x.tag === "Image";
 
 //-------------------------------------------- constractors -----------------------------------------------
 
-export const createFolder = (name:string, items:Item[], prev:Folder=null):Folder => {
-    let output:Folder = {tag:'Folder', name:name, size:-1, items:items, prev:prev};
-    let sumed_size:number = items.reduce((acc:number, item):number=>acc+item.size,0);
-    output.size = sumed_size;
+export const createFolder = (item:ReadDirItem, prevPath:string, items:Item[]=null):Folder => {
+    let output:Folder = {tag:'Folder', name:item.name, path:item.path, date:item.mtime, size:item.size, items:items, prevPath:prevPath, isFolderReady:null};
+    if(items==null) {
+        output.isFolderReady = ()=>false;
+    }
+    else {
+        output.isFolderReady = ()=>true;
+    }
     return output;
 }
 
-export const createFile = (name:string, type:string, size:number, content:any):File => {
-    return {tag:'File', name:name, type:type, size:size, content:content};
+var getType = (name:string):string => {
+    let arr = name.split('.');
+    return arr[arr.length-1];
 }
 
-export const createImage = (name:string, type:string, size:number, content:any):Image => {
-    return {tag:'Image', name:name, type:type, size:size, content:content};
+export const createFile = (item:ReadDirItem, prevPath:string, content:any=null):File => {
+    let output:File = {tag:'File', name:item.name, path:item.path, type:getType(item.name), date:item.mtime, size:item.size, content:content, isContentReady:null};
+    if(content==null) {
+        output.isContentReady = ()=>false;
+    } 
+    else {
+        output.isContentReady = ()=>true;
+    }
+    return output;
 }
 
 
