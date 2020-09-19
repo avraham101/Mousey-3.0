@@ -79,8 +79,7 @@ export default class FilesScreen extends Screen{
 
   renderLogo(item) {
     switch(item.tag) {
-      case 'File': return <Image source={require('./img/file_c.png')}/>; 
-      case 'Image': return <Image source={require('./img/image_c.png')}/>;
+      case 'File': return <Image source={require('./img/file_c.png')}/>;
       case 'Folder': return <Image source={require('./img/folder_c.png')}/>;
       default: return <Text> U </Text>;
     }

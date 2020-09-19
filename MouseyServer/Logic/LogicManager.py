@@ -45,7 +45,15 @@ class LogicManager:
         if self.connectionManager is not None:
             return self.connectionManager.getBattery()
 
+    # TODO
     # The function stop the connection made with the phone
     def stopConnection(self):
-        # TODO
         print('stoped connection')
+
+    # The function return the list of the last files recived to the mousey server
+    def getFiles(self):
+        return self.connectionManager.getFiles()
+
+    # The function return the last direction the mouse moved to.
+    def getDirection(self):
+        return self.connectionManager.getDirection()

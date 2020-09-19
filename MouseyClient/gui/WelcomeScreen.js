@@ -22,11 +22,17 @@ export default class WelcomeScreen extends Screen{
         <ImageBackground source={require('./img/Welcome_Screen.png')} style={styles.container}>
           <View style = {{flex:3}}/>
           <View style = {{flex:2, alignSelf:'center', flexDirection:'row-reverse'}}>
-            <CustomButton handler={this.handler} marginTop={'10%'} marginLeft={'5%'} onTouchEnd={this.connectClicked}>
-              <Image source={require('./img/Button_Connect.png')} resizeMode='contain'/>
+            <CustomButton handler={this.handler} flex={1} marginTop={'5%'} marginBottom={'25%'} marginRight={'20%'}
+                          marginLeft={'5%'} onTouchEnd={this.connectClicked} 
+                          borderColor={'black'} borderWidth={2} borderRadius={25} 
+                          BASE_COLOR={'#AFD7FC'} CLICK_COLOR={'#6EB7FB'}>
+              <Text style={{textAlign:'center', top:'35%', fontSize:16}}> Connect </Text>
             </CustomButton>
-            <CustomButton handler={this.handler} marginTop={'10%'}>
-              <Image source={require('./img/Button_LogBook.png')} resizeMode='contain'/>
+            <CustomButton handler={this.handler} flex={1} marginTop={'5%'} marginBottom={'25%'} marginLeft={'20%'}
+                          marginRight={'5%'} 
+                          borderColor={'black'} borderWidth={2} borderRadius={25} 
+                          BASE_COLOR={'#AFD7FC'} CLICK_COLOR={'#6EB7FB'}>
+              <Text style={{textAlign:'center', top:'35%', fontSize:16}}> Log Book </Text>
             </CustomButton>
           </View>
           <View style = {{flex:1,paddingRight:80}}>

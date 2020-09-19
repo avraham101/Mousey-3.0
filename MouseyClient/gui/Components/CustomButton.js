@@ -46,6 +46,7 @@ export default class CustomButton extends Component{
                       alignSelf:this.props.alignSelf, alignItems:this.props.alignItems,
                       marginTop:this.props.marginTop, marginBottom:this.props.marginBottom,
                       marginRight:this.props.marginRight, marginLeft:this.props.marginLeft,  
+                      paddingLeft:this.props.paddingLeft, paddingRight:this.props.paddingRight,
                       borderColor:this.props.borderColor, 
                       borderWidth:this.props.borderWidth,
                       borderLeftWidth:this.props.borderLeftWidth, borderRightWidth:this.props.borderRightWidth, 

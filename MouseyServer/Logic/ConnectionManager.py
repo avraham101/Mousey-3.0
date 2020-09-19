@@ -33,10 +33,21 @@ class ConnectionManager(Threads.Thread):
     def getDeviceName(self):
         return self.deviceName
 
-    # The function retunr the battety status
+    # The function return the battety status
     def getBattery(self):
-        return self.battery
+        if self.battery:
+            return self.battery
+        return 0
 
+    # The function return the last files recived from the client
+    def getFiles(self):
+        return self.fileHandler.getFilesNames()
+
+    # The function return the last dir the mouse moved
+    def getDirection(self):
+        return self.mouseHandler.getDirection()
+
+    # The function execute a split msg
     def executeSplitMsg(self, msg):
         if msg.getIndex() == 0:
             self.splitHandler = SplitHandler(msg.getTotal())
@@ -54,6 +65,7 @@ class ConnectionManager(Threads.Thread):
                 else:
                     self.connectionHandler.sendMsg(Messages.ReciveSplitMsg(), (self.ip, self.port))
 
+    # The function execute a msg recived by the client
     def executeMsg(self, msg):
         if msg.opcode == Messages.GENERATION_OPCODE:
             df = msg.create_data_frame()
@@ -86,6 +98,7 @@ class ConnectionManager(Threads.Thread):
             except:
                 continue
 
+# This class responseble for collenctig parts of split msgs and combine them to the original msg
 class SplitHandler:
 
     def __init__(self, size):

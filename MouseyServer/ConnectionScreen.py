@@ -10,6 +10,7 @@ GRAY = '#626B72'
 WHITE_GRAY = "#E7E6E6"
 BLUE = '#0B0C60'
 WHITE_BLUE = '#9DCCFF'
+WHITY_BLUE = '#D7E4F0'
 ORANGE = '#FFA240'
 DARK_ORANGE = '#B55219'
 WHITE = '#FFFFFF'
@@ -38,6 +39,7 @@ class Appy:
         self.rapper_frame = None
         self.initWindow()
         self.initFirstFrame()
+        # self.initConnectedFrame('android')
 
     def initWindow(self):
         self.root.title('')
@@ -241,7 +243,10 @@ class ConnectedFrame:
         self.frame = None
         self.nameLabel = None
         self.batteryLabel = None
+        self.moveLabel = None
+        self.files_list = None
         self.logout_button = None
+        self.timeUpdate = 1000  # in ms
         self.initFrame(root)
 
     def initPictures(self):
@@ -258,28 +263,61 @@ class ConnectedFrame:
         pady = 20
         padx = 25
         y_grid = self.initHeader(self.frame, y_grid, x_grid, pady, padx)
-        pady = 240
+        pady = 0
+        y_grid = self.initMainBlock(self.frame, y_grid, x_grid, pady, padx)
+        pady = 8
         self.initButton(self.frame, y_grid, pady, padx)
+        self.frame.after(self.timeUpdate, self.updateFrame)
 
     def initHeader(self, frame, y_grid, x_grid, pady, padx):
         rapper_frame = Frame(frame, bg=WHITE)
         inner_frame = Frame(rapper_frame, bg=DARK_GRAY_BLUE, height=100)
         inner_frame.pack()
         devicename = self.deviceName
-        if len(devicename) > 12:
+        if devicename is not None and len(devicename) > 12:
             devicename = devicename[0:14] + '\n' + devicename[14:]
         self.nameLabel = Label(inner_frame, text=devicename, width=12, font=DEVICE_HEADER_FONT ,
                                bg=DARK_GRAY_BLUE, fg=WHITE)
         self.nameLabel.grid(row=0, column=0)
         battery = str(self.battery) + '%   '
-        print(battery)
         self.batteryLabel = Label(inner_frame, text=battery, width=85, font=BATTERY_HEADER_FONT,
                                   bg=DARK_GRAY_BLUE, image=self.batteryImg, fg=BLACK, compound="center")
         self.batteryLabel.grid(row=0, column=1, padx=(15, 0))
-        # self.batteryLabel = Label(inner_frame, image=self.batteryImg, bg=DARK_GRAY_BLUE)
-        # self.batteryLabel.pack(side="right")
         rapper_frame.grid(row=y_grid, column=x_grid, rowspan=1, columnspan=1, padx=padx, pady=pady)
         return y_grid + 1
+
+    def initMainBlock(self, frame, y_grid, x_grid, pady, padx):
+        rapper_frame = Frame(frame, bg=WHITY_BLUE)
+        rapper_frame.grid(row=y_grid, column=x_grid, rowspan=2)
+        self.initMouseMovementView(rapper_frame, y_grid, 0, pady, padx)
+        self.initFilesView(rapper_frame, y_grid, 1, pady, 0)
+        return y_grid + 2
+
+    def initMouseMovementView(self, frame, y_grid, x_grid, pady, padx):
+        inner_frame = Frame(frame, bg=WHITY_BLUE)
+        inner_frame.grid(row=y_grid, column=x_grid, rowspan=1, columnspan=1, padx=(0, 10))
+        label = Label(inner_frame, text='Last\nMouse\nMove:', width=8, font=BATTERY_HEADER_FONT,
+                           bg=DARK_GRAY_BLUE, fg=WHITE)
+        label.pack(side="top")
+        self.moveLabel = Label(inner_frame, text='', width=8, font=BATTERY_HEADER_FONT,
+                               bg=WHITY_BLUE, fg=BLACK)
+        self.moveLabel.pack(side="top")
+        return y_grid + 2
+
+    def initFilesView(self, frame, y_grid, x_grid, pady, padx):
+        inner_frame = Frame(frame, bg=BLACK)
+        inner_frame.grid(row=y_grid, column=x_grid, rowspan=2, columnspan=1, padx=padx, pady=pady)
+        title = Label(inner_frame, text='Recived Files:', width=14, font=BATTERY_HEADER_FONT,
+                          bg=DARK_GRAY_BLUE, fg=WHITE)
+        title.pack()
+        self.files_list = Listbox(inner_frame, bd=0, font=LISTBOX_FONT, width=15)
+        self.files_list.pack(side="left", fill="y", padx=(1, 0), pady=1)
+        self.files_list.contains = lambda x: x in self.files_list.get(0, "end")
+        scrollbar = Scrollbar(inner_frame, orient="vertical")
+        scrollbar.config(command=self.files_list)
+        scrollbar.pack(side="right", fill="y", padx=(0, 2), pady=1)
+        self.files_list.config(yscrollcommand=scrollbar.set)
+        return y_grid + 2
 
     def initButton(self, frame, y_grid, pady, padx):
         rapper_frame = Frame(frame, bg=WHITE)
@@ -292,6 +330,32 @@ class ConnectedFrame:
 
     def hideFrame(self):
         self.frame.pack_forget()
+
+    def updateFrame(self):
+        print('updated frame')
+        self.getFiles()
+        self.getDirection()
+        self.frame.after(self.timeUpdate, self.updateFrame)
+
+    # The function refactor a file name
+    def refactorFileName(self, name, maxi=13):
+        if len(name) > maxi:
+            prefix = name[0:maxi - 7]
+            sefix = name[-7:]
+            return prefix + ' ... ' + sefix
+        return name
+
+    def getFiles(self):
+        files = self.logicManger.getFiles()
+        for file in files:
+            file = self.refactorFileName(file)
+            if not self.files_list.contains(file):
+                index = self.files_list.size()
+                self.files_list.insert(index, file)
+
+    def getDirection(self):
+        direction = self.logicManger.getDirection()
+        self.moveLabel['text'] = direction
 
 # This is the main function
 def main():
