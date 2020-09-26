@@ -67,7 +67,7 @@ class GenerationMessage(Message):
     def create_data_frame(self):
         lst = []
         columns = ['tag', 'accelometer_x', 'accelometer_y', 'accelometer_z',
-                   'gyroscope_x', 'gyroscope_y', 'gyroscope_z', 'angle', 'diff']
+                   'gyroscope_x', 'gyroscope_y', 'gyroscope_z', 'angle', 'diff', 'base']
         for state in self.data:
             tag = state['tag'].lower()
             accs = state['accelometers']
@@ -79,18 +79,9 @@ class GenerationMessage(Message):
                 gyro = gyroes[i]
                 angle = angles[i]
                 arr = [tag, acc['x'], acc['y'], acc['z'], gyro['x'], gyro['y'], gyro['z'],
-                       angle['angle'], angle['diff']]
+                       angle['angle'], angle['diff'], angle['base']]
                 lst.append(arr)
         return pd.DataFrame(lst, columns=columns)
-
-    def fix_accelometer_gyroscope_arr(self, accelometer, gyroscope):
-        acc_size = len(accelometer)
-        gyro_size = len(gyroscope)
-        if acc_size > gyro_size:
-            accelometer = accelometer[0:gyro_size]
-        elif gyro_size > acc_size:
-            gyroscope = gyroscope[0:acc_size]
-        return accelometer, gyroscope
 
     def fix_arrays(self, accelometer, gyroscope, angel):
         minom = len(accelometer)  # min = acc_size
@@ -104,7 +95,6 @@ class GenerationMessage(Message):
         gyroscope = gyroscope[0:minom]
         angel = angel[0:minom]
         return accelometer, gyroscope, angel
-
 
 class MouseClick(Message):
 
@@ -126,12 +116,8 @@ class MouseMove(Message):
         super().__init__(MOUSE_MOVE_OPCODE)
         self.data = data
 
-    def getAcc(self):
-        return self.data['acc']['x'], self.data['acc']['y'], self.data['acc']['z']
-
-    def getGyro(self):
-        return self.data['gyro']['x'], self.data['gyro']['y'], self.data['gyro']['z']
-
+    def getWindow(self):
+        return self.data
 
 class SplitMsg(Message):
 

@@ -115,7 +115,7 @@ export default class InitScreen extends Screen{
   }
 
   subscribeSensors() {
-    let intervals = 20; // for fast moving
+    let intervals = 10; // for fast moving
     setUpdateIntervalForType(SensorTypes.accelerometer, intervals);
     setUpdateIntervalForType(SensorTypes.gyroscope, intervals);
     setUpdateIntervalForType(SensorTypes.magnetometer, intervals);

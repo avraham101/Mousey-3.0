@@ -145,6 +145,14 @@ export default class LogicManager {
   saveMouseMoveGyro({x,y,z}:{x:number,y:number,z:number}) : void {
     this.mouseyHandler.addGyroscope({x,y,z});
   }
+
+  /**
+   * the function save the mouse move magnometer data
+   * @param param0 - the magnometer data
+   */
+  saveMouseMoveMagnometer({x,y,z}:{x:number,y:number,z:number}) : void {
+    this.mouseyHandler.addMagnometer({x,y,z})
+  }
   
   /**
    * The function send Mouse Move msg to the server

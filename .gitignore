@@ -12,4 +12,5 @@ MouseyClient/node_modules/
 .idea
 *.iml
 MouseyServer/Presistent/__pycache__/
+MouseyServer/model notebooks/
 *.pptx

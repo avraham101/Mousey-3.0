@@ -15,6 +15,11 @@ class FileHandler:
             os.makedirs(path)
         self.path = path
 
+    def getPath(self):
+        if self.path is not None:
+            return self.path
+        return ''
+
     def saveFile(self, msg):
         name = msg.getName()
         data = msg.getFileData()

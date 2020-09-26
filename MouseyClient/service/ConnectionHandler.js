@@ -171,14 +171,6 @@ export default class ConnectionHandler {
               nextMsg(msgs, index+1); 
             }
           };
-          //TODO: delete this - no more needed used 1 lisner to know what is the next msg need to be recived and what to send.
-          // this.socket.on('message', function(msg, senderInfo) {
-          //   msg = encodeco.decode(msg);
-          //   if(isReciveSpliteMsg(msg)) {
-          //     console.log('recived Recived Split Msg '+index);
-          //     nextMsg(msgs, index+1); 
-          //   }
-          // });
         }
       }
       nextMsg(msgs,0);

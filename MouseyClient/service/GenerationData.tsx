@@ -18,6 +18,7 @@ export interface Angle {
   tag: 'Angle',
   angle: number,
   diff: number,
+  base: number,
 }
 
 export const createAccelometer = (x:number, y:number, z:number):Accelometer => {
@@ -28,21 +29,22 @@ export const createGyroscope = (x:number, y:number, z:number):Gyroscope => {
   return {tag:'Gyroscope',x:x,y:y,z:z};
 }
 
-export const createEngle = (x:number, y:number, z:number):Angle => {
+export const createAngle = (x:number, y:number, z:number):Angle => {
   let angle:number = Math.atan2(y,x);
   angle = angle * (180 / Math.PI);
   angle += 90;
   angle = (angle+360) % 360;
-  return {tag:'Angle', angle:angle, diff:null};
+  return {tag:'Angle', angle:0, diff:0, base:angle};
 }
 
-export const createEngleWithPrev = (x:number, y:number, z:number, prev_angle:number):Angle => {
+export const createAngleWithPrev = (x:number, y:number, z:number, prev_angle:number, prev_base:number):Angle => {
   let angle:number = Math.atan2(y,x);
   angle = angle * (180 / Math.PI);
   angle += 90;
   angle = (angle+360) % 360;
+  angle = angle - prev_base;
   let diff:number = angle - prev_angle;
-  return {tag:'Angle', angle:angle, diff:diff};
+  return {tag:'Angle', angle:angle, diff:diff, base:prev_base};
 }
 
 export const sameSensorData = (a:Sensor, b:Sensor, level:number): Boolean => {

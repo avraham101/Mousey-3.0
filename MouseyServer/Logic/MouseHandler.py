@@ -2,6 +2,8 @@ import win32api, win32con
 import numpy as np
 import tensorflow as tf
 from tensorflow import Graph, Session
+from keras.models import Model, load_model
+from keras.layers import Input, Dense, concatenate, PReLU
 from keras import backend as K
 from tensorflow.keras.models import load_model
 
@@ -44,10 +46,13 @@ class MouseHandler:
 
     def mouseMove(self, msg):
         self.prevTouch = None
-        ax, ay, az = msg.getAcc()
-        gx, gy, gz = msg.getGyro()
-        self.modelHandler.insert(ax, ay, az, gx, gy, gz)
-        res = self.modelHandler.predict()
+        # ax, ay, az = msg.getAcc()
+        # gx, gy, gz = msg.getGyro()
+        # angle, diff = msg.getAngle()
+        # self.modelHandler.insert(ax, ay, az, gx, gy, gz, angle, diff)
+        # res = self.modelHandler.predict()
+        window = msg.getWindow()
+        res = self.modelHandler.predictWindow(window)
         self.movedLabel = res
         print(res)
         if res is not None:
@@ -124,52 +129,74 @@ class MouseHandler:
 
 class ModelHandler:
 
-    def __init__(self, points, path):
-        self.arrSize = points
-        self.arr = [None] * points
-        self.head = 0
-        self.items = 0
-        self.pmap = {'ned': 0, 'right': 1, 'downright': 2, 'upright': 3, 'left': 4, 'upleft': 5, 'down': 6,
-                     'downleft': 7, 'up': 8}
+    def __init__(self, path):
+        self.pmap = {'upleft': 0, 'downleft': 1, 'left': 2, 'upright': 3, 'down': 4, 'ned': 5, 'downright': 6,
+                     'up': 7, 'right': 8}
         self.map = {self.pmap[x]: x for x in self.pmap}
         with graph.as_default():
             self.session = Session(graph=graph)
             with self.session.as_default():
-                self.model = load_model(path)
+                self.model, name = self.create_complex_siamese_model(p=5)
+                self.model.load_weights(path)
+                # self.model = load_model(path)
 
-    def insert(self, ax, ay, az, gx, gy, gz):
-        self.arr[self.head] = [[[ax, ay, az]], [[gx, gy, gz]]]
-        if self.items < self.arrSize:
-            self.items += 1
-        self.head += 1
-        if self.head == self.arrSize:
-            self.head = 0
+    def dense_depth_block(self, inp, N=32, extend_N=4, deapth=5):
+        if deapth == 0:
+            return inp
+        x = None
+        prev_x = None
+        xs = []
+        for i in range(0, deapth):
+            if x is None:
+                x = Dense(N)(inp)
+                x = PReLU()(x)
+            else:
+                prev_x = x
+                x = Dense(N + i * extend_N)(prev_x)
+                x = PReLU()(x)
+            xs.append(x)
+        if len(xs) != 1:
+            x = concatenate(xs)
+        return x
 
-    def predict(self):
-        if self.items == self.arrSize:
-            data = []
-            index = 0
-            head = self.head - 1
-            if head < 0:
-                head = self.arrSize - 1
-            for i in range(0, self.arrSize):
-                if i > head:
-                    index = self.arrSize + head - i
-                else:
-                    index = head - i
-                data.extend(self.arr[index])
-            data = np.float32(data)
-            print('data', data.shape)
-            data = data.tolist()
-            try:
-                K.set_session(self.session)
-                with graph.as_default():
-                    p = self.model.predict(data)
-                    print(p)
-                    p = np.argmax(p, axis=1)
-                    return self.map[p[0]]
-            except ValueError as e:
-                print(e)
+    def create_chanel(self, size=3, deapth=5, N=32, extend_N=16):
+        inp = Input(shape=size)
+        x = self.dense_depth_block(inp, deapth=deapth, N=N, extend_N=extend_N)
+        return inp, x
+
+    def create_complex_siamese_model(self, p=5):
+        inputs = []
+        cs = []
+        for i in range(p):
+            inp_acc, c_acc = self.create_chanel(size=(3,), deapth=2, N=16)
+            inputs.append(inp_acc)
+            cs.append(c_acc)
+            inp_gyro, c_gyro = self.create_chanel(size=(3,), deapth=2, N=16)
+            inputs.append(inp_gyro)
+            cs.append(c_gyro)
+            inp_angle, c_angle = self.create_chanel(size=(2,), deapth=2, N=16)
+            inputs.append(inp_angle)
+            cs.append(c_angle)
+        x = concatenate(cs)
+        x = Dense(256)(x)
+        x = PReLU()(x)
+        x = Dense(128)(x)
+        x = PReLU()(x)
+        x = Dense(9, activation='softmax')(x)
+        model = Model(inputs=inputs, outputs=x, name='complex_siamese_' + str(p) + '_model')
+        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        return model, 'complex_siamese_' + str(p) + '_model'
+
+    def predictWindow(self, window):
+        try:
+            K.set_session(self.session)
+            with graph.as_default():
+                p = self.model.predict(window)
+                print(p)
+                p = np.argmax(p, axis=1)
+                return self.map[p[0]]
+        except ValueError as e:
+            print(e)
         return None
 
 # tester:

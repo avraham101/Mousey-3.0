@@ -7,7 +7,7 @@ import { State, Dir,
          createEmptyDown, createEmptyUp, createEmptyRight, createEmptyLeft, createEmptyUpRight, createEmptyDownLeft, 
          createEmptyUpLeft, createDone, createError, createReady, isDone, createStop, createEmptyDownRight,
          createEmptyNed} from './GenerationState';
-import { createAccelometer, createGyroscope, createEngle, createEngleWithPrev,
+import { createAccelometer, createGyroscope, createAngle, createAngleWithPrev,
          Accelometer, sameSensorData, Gyroscope, Angle} from './GenerationData';
 
 export default class GenerationHandler {
@@ -65,16 +65,15 @@ export default class GenerationHandler {
    */
   addAngle({x,y,z}:{x:number,y:number,z:number}):void {
     if(isDir(this.state)) {
-      let current:Angle = null;
+      let current:Angle = null;      
       if(this.prevAngle == null) {
-        current = createEngle(x,y,z);
+        current = createAngle(x,y,z);
       }
       else {
-        current = createEngleWithPrev(x,y,z, this.prevAngle.angle)
+        current = createAngleWithPrev(x,y,z, this.prevAngle.angle, this.prevAngle.base);
       }
       this.prevAngle = current;
       this.state.angels.push(current);
-      
     }
   }
 

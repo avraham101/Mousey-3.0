@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, Button, StyleSheet, ImageBackground, Image} from 'react-native';
-import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope} from "react-native-sensors";
+import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope, magnetometer} from "react-native-sensors";
 import Screen from './Screen';
 import TouchPadScreen from './TouchPadScreen';
 import FilesScreen from './FilesScreen';
@@ -50,9 +50,10 @@ export default class MouseScreen extends Screen{
   }
 
   subscribeSensors() {
-    let intervals = 30;
+    let intervals = 10;
     setUpdateIntervalForType(SensorTypes.accelerometer, intervals);
     setUpdateIntervalForType(SensorTypes.gyroscope, intervals);
+    setUpdateIntervalForType(SensorTypes.magnetometer, intervals);
     this.accelerometer = accelerometer.subscribe(({ x, y, z, timestamp }) => {
       let data = {x, y, z};
       this.logicManager.saveMouseMoveAcc(data); 
@@ -61,6 +62,10 @@ export default class MouseScreen extends Screen{
     this.gyroscope = gyroscope.subscribe(({ x, y, z, timestamp }) => {
         let data = {x, y, z};
         this.logicManager.saveMouseMoveGyro(data);
+    });
+    this.magnetometer = magnetometer.subscribe(({ x, y, z, timestamp }) => {
+      let data = {x, y, z};
+      this.logicManager.saveMouseMoveMagnometer(data);
     });
   }
 
