@@ -8,7 +8,7 @@ from Logic.FileHandler import FileHandler
 
 class ConnectionManager(Threads.Thread):
 
-    def __init__(self, connectionHandler, ip, port, name, battery, modelHandler):
+    def __init__(self, connectionHandler, ip, port, name, battery, logoutFunc, modelHandler):
         super().__init__()
         self.ip = ip
         self.port = port
@@ -20,6 +20,8 @@ class ConnectionManager(Threads.Thread):
         self.mouseHandler = MouseHandler(modelHandler)
         self.splitHandler = None
         self.fileHandler = FileHandler()
+        self.logged = True
+        self.logoutFunc = logoutFunc
 
     # The function connect to a phone by using private key
     def connect(self):
@@ -83,13 +85,51 @@ class ConnectionManager(Threads.Thread):
             self.mouseHandler.rollerMove(msg)
         elif msg.opcode == Messages.FILE_OPCODE:
             self.fileHandler.saveFile(msg)
+        elif msg.opcode == Messages.LOGOUT_OPCODE:
+            self.sendAckLogout()
+        elif msg.opcode == Messages.ACKLOGOUT_OPCODE:
+            self.sendFin()
         else:
             return
+
+    # The function send a logout msg to the mousey client
+    def sendLogoutMsg(self):
+        msg = Messages.LogoutMsg()
+        print('send logout msg')
+        self.connectionHandler.sendMsg(msg, (self.ip, self.port))
+
+    # The function recived logout msg and send ack logout
+    def sendAckLogout(self):
+        self.logged = False
+        msg = Messages.AckLogoutMsg()
+        print('send ack logout msg')
+        self.connectionHandler.sendMsg(msg, (self.ip, self.port))
+        fin = False
+        while fin is False:
+            try:
+                msg, ip = self.connectionHandler.accept(msgSize=128000)  # 2^17
+                if msg.opcode == Messages.FIN_OPCODE:
+                    print('recived fin msg')
+                    fin = True
+                else:
+                    print('send ack logout msg')
+                    self.connectionHandler.sendMsg(msg, (self.ip, self.port))
+            except Exception as e:
+                continue
+        self.logoutFunc()
+
+    # The function recived AckLogout and send a Fin msg
+    def sendFin(self):
+        msg = Messages.FinMsg()
+        print('send fin msg')
+        self.connectionHandler.sendMsg(msg, (self.ip, self.port))
+        self.logged = False
+        self.logoutFunc()
 
     # The function is the funing function of the thread
     def run(self):
         self.connect()
-        while True:
+        while self.logged:
             try:
                 msg, ip = self.connectionHandler.accept(msgSize=128000)  # 2^17
                 self.executeMsg(msg)

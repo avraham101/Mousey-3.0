@@ -9,9 +9,12 @@ MOUSE_CLICK_OPCODE = 23
 MOUSE_MOVE_OPCODE = 24
 TOUCH_MOVE_OPCODE = 25
 ROLLER_MOVE_OPCODE = 26
+LOGOUT_OPCODE = 27
 FILE_OPCODE = 28
 SPLIT_OPCODE = 29
 RECIVE_SPLIT_OPCODE = 30
+ACKLOGOUT_OPCODE = 31
+FIN_OPCODE = 32
 
 
 class Message:
@@ -194,5 +197,29 @@ class FileMsg(Message):
 
     def getFileData(self):
         return self.data
+    
+class LogoutMsg(Message):
+    
+    def __init__(self):
+        super().__init__(LOGOUT_OPCODE)
+
+    def encode(self):
+        return bytes([0])
+
+class AckLogoutMsg(Message):
+
+    def __init__(self):
+        super().__init__(ACKLOGOUT_OPCODE)
+
+    def encode(self):
+        return bytes([0])
+
+class FinMsg(Message):
+
+    def __init__(self):
+        super().__init__(FIN_OPCODE)
+
+    def encode(self):
+        return bytes([0])
 
 

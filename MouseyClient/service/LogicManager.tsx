@@ -10,9 +10,10 @@ export default class LogicManager {
   generationHandler:GenerationHandler;
   mouseyHandler:MousetHandler;
   fileHandler:FileHandler;
+  logoutPromise: ()=>void;
 
-  constructor() {
-    this.connectionHandler = new ConnectionHandler(1250);
+  constructor(logoutPromise:()=>void) {
+    this.connectionHandler = new ConnectionHandler(1250, logoutPromise);
     this.generationHandler = new GenerationHandler(this.connectionHandler);
     this.mouseyHandler = new MousetHandler(this.connectionHandler);
     this.fileHandler = new FileHandler(this.connectionHandler);
@@ -215,4 +216,12 @@ export default class LogicManager {
   sendFile(name:string, path:string, date:string, fileSize:string, type:string) {
     this.fileHandler.sendFile(name,path, date, fileSize, type);
   }
+
+  /**
+   * The function send a logout msg to the server
+   */
+  logoutMousey() {
+    this.connectionHandler.sendLogout();
+  }
+
 }

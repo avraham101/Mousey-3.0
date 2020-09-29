@@ -14,6 +14,7 @@ export default class TouchPadScreen extends Screen{
     this.logicManager = logicManager;
     this.clickMousey = this.clickMousey.bind(this);
     this.clickFileTransmit = this.clickFileTransmit.bind(this);
+    this.clickLogout = this.clickLogout.bind(this);
     this.clickLeft = this.clickLeft.bind(this);
     this.realseLeft = this.realseLeft.bind(this);
     this.clickRight = this.clickRight.bind(this);
@@ -29,6 +30,10 @@ export default class TouchPadScreen extends Screen{
 
   clickFileTransmit() {
     this.handler.navigate(new FilesScreen(this.handler, this.logicManager));
+  }
+
+  clickLogout() {
+    this.logicManager.logoutMousey();
   }
 
   clickLeft(e) {
@@ -95,7 +100,8 @@ export default class TouchPadScreen extends Screen{
   render = () => {
     return( 
       <ImageBackground source={require('./img/TouchPad_Screen.png')} style={styles.container}>
-          <Menu handler={this.handler} clickMousey={this.clickMousey} clickFileTransmit={this.clickFileTransmit}/>
+          <Menu handler={this.handler} clickMousey={this.clickMousey} clickFileTransmit={this.clickFileTransmit} 
+                                       clickLogout={this.clickLogout}/>
           <View style={{flex:1}}/>
           <View style={{flex:2, flexDirection:'row-reverse'}}>
             <CustomButton handler={this.handler}  onTouchStart={this.clickLeft} onTouchEnd={this.realseLeft} 

@@ -1,4 +1,4 @@
-import {Message, createSearchMsg, createConnectMsg, createReciveSplitMsg} from './Messages';
+import {Message, createSearchMsg, createConnectMsg, createReciveSplitMsg, LOGOUT_MSG, createLogoutMsg, ACK_LOGOUT_MSG, createAckLogoutMsg, FIN_MSG, createFinMsg} from './Messages';
 import {SEARCH_MSG, FOUND_MSG, CONNECT_MSG, GENERATION_MSG, MOUSE_CLICK_MGS, MOUSE_MOVE_MSG, SPLIT_MSG, RECIVE_SPLIT_MSG} from './Messages'
 
 export default class EncoDecoder {
@@ -42,6 +42,15 @@ export default class EncoDecoder {
       }
       case RECIVE_SPLIT_MSG: {
         return createReciveSplitMsg();
+      }
+      case LOGOUT_MSG: {
+        return createLogoutMsg();
+      }
+      case ACK_LOGOUT_MSG: {
+        return createAckLogoutMsg();
+      }
+      case FIN_MSG: {
+        return createFinMsg();
       }
       default:
         console.log('wrong opcode recived')

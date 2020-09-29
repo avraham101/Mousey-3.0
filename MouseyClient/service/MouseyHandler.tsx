@@ -17,7 +17,7 @@ export default class MouseyHandler {
     this.gyroQueue = [];
     this.angleQueue = [];
     this.prevAngle = null;
-    this.windowHandler = new WindowHandler(5);
+    this.windowHandler = new WindowHandler(11);
   }
   
   /**
@@ -46,7 +46,8 @@ export default class MouseyHandler {
       let acc:Accelometer = this.accQueue.shift();
       let gyro:Gyroscope = this.gyroQueue.shift();
       let angle:Angle = this.angleQueue.shift();
-      this.windowHandler.insert([acc.x,acc.y,acc.z],[gyro.x, gyro.y, gyro.z],[angle.angle, angle.diff])
+      // this.windowHandler.insert([acc.x,acc.y,acc.z],[gyro.x, gyro.y, gyro.z],[angle.angle, angle.diff])
+      this.windowHandler.insert([acc.x,acc.y,acc.z],[gyro.x, gyro.y, gyro.z],[angle.angle])
       let data  = this.windowHandler.getWindow();
       if(data != undefined) {
         let msg:Message = createMouseMoveMsg(data);

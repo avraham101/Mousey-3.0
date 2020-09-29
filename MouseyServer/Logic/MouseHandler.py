@@ -130,13 +130,16 @@ class MouseHandler:
 class ModelHandler:
 
     def __init__(self, path):
-        self.pmap = {'upleft': 0, 'downleft': 1, 'left': 2, 'upright': 3, 'down': 4, 'ned': 5, 'downright': 6,
-                     'up': 7, 'right': 8}
+        self.points = 11
+        self.pmap = {'ned': 0, 'up': 1, 'upleft': 2, 'left': 3, 'downleft': 4, 'right': 5,
+                     'upright': 6, 'downright': 7, 'down': 8}
+        self.pmaprev = {'ned': 0, 'right': 1, 'down': 2, 'left': 3, 'upleft': 4,
+                        'up': 5, 'upright': 6, 'downleft': 7, 'downright': 8}
         self.map = {self.pmap[x]: x for x in self.pmap}
         with graph.as_default():
             self.session = Session(graph=graph)
             with self.session.as_default():
-                self.model, name = self.create_complex_siamese_model(p=5)
+                self.model, name = self.create_complex_siamese_model(p=self.points)
                 self.model.load_weights(path)
                 # self.model = load_model(path)
 
@@ -174,7 +177,7 @@ class ModelHandler:
             inp_gyro, c_gyro = self.create_chanel(size=(3,), deapth=2, N=16)
             inputs.append(inp_gyro)
             cs.append(c_gyro)
-            inp_angle, c_angle = self.create_chanel(size=(2,), deapth=2, N=16)
+            inp_angle, c_angle = self.create_chanel(size=(1,), deapth=2, N=16)
             inputs.append(inp_angle)
             cs.append(c_angle)
         x = concatenate(cs)

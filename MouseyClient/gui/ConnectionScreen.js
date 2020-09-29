@@ -9,7 +9,10 @@ export default class ConnectionScreen extends Screen{
 
   constructor(handler) {
     super(handler);
-    this.logicManager = new LogicManager();
+    let logoutPromise = () => {
+      handler.navigate(new WelcomeScreen(this.handler));
+    }
+    this.logicManager = new LogicManager(logoutPromise);
     this.search();
   };
 

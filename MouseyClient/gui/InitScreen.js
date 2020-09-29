@@ -208,9 +208,13 @@ export default class InitScreen extends Screen{
     let clickout = (e) => {
       this.moveToNextState(this.logicManager.nextInitStep());
     }
-    return  <TouchableOpacity style={{alignItems:'center'}} onPressIn={clickIn} onPressOut={clickout}>
-              <Image source={require('./img/Button_Finger.png')} resizeMode='contain'/>
-            </TouchableOpacity>
+    return  <View style={{flexDirection: 'row', }}>
+              <View style={{flex:1}}/>
+              <TouchableOpacity style={{flex:1, alignItems:'center'}} onPressIn={clickIn} onPressOut={clickout}>
+                <Image source={require('./img/Button_Finger.png')} resizeMode='stretch'/>
+              </TouchableOpacity>
+              <View style={{flex:1}}/>
+            </View>
   }
 
   /**
@@ -219,10 +223,8 @@ export default class InitScreen extends Screen{
   getButtonInstruction = () => {
     return this.initState == 'Stop'? this.getButtonResume():
     this.initState == 'Ready'? this.getButtonStart():
-    //this.initState == 'Ned' ? [] :
     this.initState == 'Processing'? [] :
     this.initState == 'Done'? this.getButtonSendData() :
-    //this.getButtonStop();
     this.getButtonFinger();
   }
 

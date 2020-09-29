@@ -7,7 +7,7 @@ class LogicManager:
         self.connectionHandler = ConnectionHandler.ConnectionHandler(1250)
         self.searchManager = None
         self.connectionManager = None
-        self.modelHandler = MouseHandler.ModelHandler(5, '.\Logic\model16.h5')
+        self.modelHandler = MouseHandler.ModelHandler('.\Logic\model16.h5')
 
     # The function start searching for income conection
     def search(self):
@@ -26,11 +26,11 @@ class LogicManager:
         return {}
 
     # The function start a connection
-    def startConnection(self, connection):
+    def startConnection(self, connection, logoutFunc):
         if self.searchManager is not None and self.searchManager.avaliableConnection(connection):
             (ip, port), msg = self.searchManager.getConnection(connection)
             self.connectionManager = ConnectionManager.ConnectionManager(self.connectionHandler, ip, port,
-                                             msg.deviceName, msg.battery, self.modelHandler)
+                                             msg.deviceName, msg.battery, logoutFunc, self.modelHandler)
             self.connectionManager.start()
             return True
         return False
@@ -45,10 +45,9 @@ class LogicManager:
         if self.connectionManager is not None:
             return self.connectionManager.getBattery()
 
-    # TODO
     # The function stop the connection made with the phone
     def stopConnection(self):
-        print('stoped connection')
+        self.connectionManager.sendLogoutMsg()
 
     # The function return the list of the last files recived to the mousey server
     def getFiles(self):

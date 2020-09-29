@@ -39,6 +39,7 @@ class Appy:
         self.rapper_frame = None
         self.initWindow()
         self.initFirstFrame()
+        self.connection = None # this is for logout, it is the connection frame
         # self.initConnectedFrame('android')
 
     def initWindow(self):
@@ -71,8 +72,12 @@ class Appy:
             search.hideFrame()
             self.initStartFrame()
 
+        def logout():
+            self.connection.hideFrame()
+            self.initFirstFrame()
+
         def connected(connection):
-            if self.logicManager.startConnection(connection):
+            if self.logicManager.startConnection(connection, logout):
                 self.logicManager.stopSearch()
                 search.hideFrame()
                 self.initConnectedFrame(connection)
@@ -82,12 +87,12 @@ class Appy:
         search.setConnectionSelectFunction(connected)
 
     def initConnectedFrame(self, connection):
-        connection = ConnectedFrame(self.logicManager, self.rapper_frame)
+        self.connection = ConnectedFrame(self.logicManager, self.rapper_frame)
         def logout():
             self.logicManager.stopConnection()
-            connection.hideFrame()
+            self.connection.hideFrame()
             self.initFirstFrame()
-        connection.setLogoutButtonFunction(logout)
+        self.connection.setLogoutButtonFunction(logout)
 
     def run(self):
         self.root.mainloop()

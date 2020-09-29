@@ -1,7 +1,8 @@
 import dgram from 'react-native-udp';
 import EncoDecoder from './EncoderDecoder';
 import {getSystemName, getDeviceName, getUniqueId, getBatteryLevel, } from 'react-native-device-info'
-import {createFoundMsg, isSearchMsg, isConnectMsg, createGenerationMsg, createSplitMsgs, isReciveSpliteMsg, createFileMsg} from './Messages'
+import {createFoundMsg, isSearchMsg, isConnectMsg, createGenerationMsg, createSplitMsgs, isReciveSpliteMsg, 
+        createFileMsg, createLogoutMsg, isLogoutMsg, createAckLogoutMsg, isFinMsg, isAckLogoutMsg, createFinMsg} from './Messages'
 
 var port_mousey = undefined;
 var address_mousey = undefined;
@@ -10,13 +11,23 @@ var lisener = null;
 
 export default class ConnectionHandler {
 
-  constructor(port) {
+  constructor(port, logoutPromise) {
     this.encodeco = new EncoDecoder();
     this.socket = dgram.createSocket('udp4'); 
     this.socket.bind(1250); 
     this.key_toServer = undefined;
     this.addLisenersMousey();
+    this.logoutPromise = logoutPromise; // The promise function for exit the current screen
   } 
+
+
+  /**
+   * The function is for restarting all the elemnts needed for the connection
+   */
+  resetConection = () => {
+    lisener = null;
+    this.socket.close();
+  }
 
   /**
    * The function send a broad cast to find server Mousey
@@ -25,18 +36,26 @@ export default class ConnectionHandler {
   broadcast = (promise) => {
     let encodeco = this.encodeco;
     let sendMouseFound = this.sendMouseFound;
+    let sendAckLogout = this.sendAckLogout;
+    let sendFin = this.sendFin;
     //sender info stracture "address": , "family": , "port": , "size":
     this.socket.on('message', function(msg, senderInfo) {
-      msg = encodeco.decode(msg);
-      let address = senderInfo.address;
-      let port = senderInfo.port;
-      if (isSearchMsg(msg)) {
-        sendMouseFound(address, port);
-      }
-      else if(isConnectMsg(msg)) {
-        this.key_toServer = msg.key;
-        promise(msg.key)
-      }
+        msg = encodeco.decode(msg);
+        let address = senderInfo.address;
+        let port = senderInfo.port;
+        if (isSearchMsg(msg)) {
+          sendMouseFound(address, port);
+        }
+        else if(isConnectMsg(msg)) {
+          this.key_toServer = msg.key;
+          promise(msg.key)
+        }
+        else if(isLogoutMsg(msg)) {
+          sendAckLogout();
+        }
+        else if(isAckLogoutMsg(msg)) {
+          sendFin();
+        }
       });
     this.socket.on('error', (e)=>{
       console.log(e);
@@ -92,6 +111,7 @@ export default class ConnectionHandler {
   
   /**
    * The funcion is added a lisener function for reciving msg from the server.
+   * We call this function at the bulider of the class
    * Note: we are using the lisner as an extra msgs beside the basic connection msgs so we can controll the flow for the 
    *       upcoming msgs. 
    * Note: there is only 1 lisener (var) function after decode the msg, so we can change the lisener as we like
@@ -151,34 +171,71 @@ export default class ConnectionHandler {
     // let encodeco = this.encodeco;
     let id = getUniqueId();
     let msg = createGenerationMsg(id,data);
-    //TODO: refactor this after verifying it work to
-    //      this.sendOrSplit(msg);
-    if(msg.toString().length < MAX_UDP_SIZE) {
-      this.send(msg);
-    }
-    else {
-      //TODO: refactor this after verifying it work to
-      //      this.sendSplitMsgs(msg);
-      let msgs = createSplitMsgs(msg);
-      let nextMsg = (msgs, index) => {
-        if(msgs.length > index) {
-          console.log('send split msg '+index);
-          this.send(msgs[index]);
-          lisener = (msg, senderInfo) => {
-            console.log('\t inside lisener splitMsg')
-            if(isReciveSpliteMsg(msg)) {
-              console.log('\t >> recived Recived Split Msg '+index);
-              nextMsg(msgs, index+1); 
-            }
-          };
-        }
-      }
-      nextMsg(msgs,0);
-    }
+    this.sendOrSplit(msg);
   } 
 
+  /**
+   * The function send a file msg to the server
+   * @param {*} name the name of the file
+   * @param {*} date the date the file created
+   * @param {*} fileSize the file size
+   * @param {*} content the content of the file
+   */
   sendFileMsg(name, date, fileSize, content) {
     let msg = createFileMsg(name, date, fileSize, content);
     this.sendOrSplit(msg);
   }
+
+  /**
+   * The function send a logout msg to the server from this mouse
+   */
+  sendLogout = () => {
+    let msg = createLogoutMsg();
+    this.send(msg);
+    console.log('>> send logout msg '+ msg);
+  }
+
+  /**
+   * The function send a ack logout msg, if the fin msg isnt recived send agian ack logout msg.
+   */
+  sendAckLogout = () => {
+    let recivedFin = false;
+    let interval = 100;
+    let maxTries = 5;
+    let sendAck = () => {
+      if(maxTries == 0) {
+        this.resetConection();
+        this.logoutPromise();
+      }
+      else {
+        console.log('send ack logout msg');
+        maxTries -= 1;
+        //define the lisner only to recive fin msg not other msg.
+        lisener = (msg, senderInfo) => {
+          if(isFinMsg(msg)) {
+            recivedFin = true;
+            this.resetConection();
+            this.logoutPromise();
+          }
+        };
+        if(recivedFin == false) {
+          let msg = createAckLogoutMsg();
+          this.send(msg);
+          setTimeout(sendAck, interval);
+        }
+      }
+    }
+    sendAck();
+  }
+
+  /**
+   * The function send a Fin Msg to the server, after reciving ackLogout
+   */
+  sendFin = () => {
+    let msg = createFinMsg();
+    this.send(msg);
+    this.resetConection();
+    this.logoutPromise();
+  }
+
 }

@@ -25,14 +25,14 @@ export default class WelcomeScreen extends Screen{
             <CustomButton handler={this.handler} flex={1} marginTop={'5%'} marginBottom={'25%'} marginRight={'20%'}
                           marginLeft={'5%'} onTouchEnd={this.connectClicked} 
                           borderColor={'black'} borderWidth={2} borderRadius={25} 
-                          BASE_COLOR={'#AFD7FC'} CLICK_COLOR={'#6EB7FB'}>
-              <Text style={{textAlign:'center', top:'35%', fontSize:16}}> Connect </Text>
+                          BASE_COLOR={'#2196F3'} CLICK_COLOR={'#69B9F6'}>
+              <Text style={{textAlign:'center', color:'white', top:'35%', fontSize:18, }}> Connect </Text>
             </CustomButton>
             <CustomButton handler={this.handler} flex={1} marginTop={'5%'} marginBottom={'25%'} marginLeft={'20%'}
                           marginRight={'5%'} 
                           borderColor={'black'} borderWidth={2} borderRadius={25} 
-                          BASE_COLOR={'#AFD7FC'} CLICK_COLOR={'#6EB7FB'}>
-              <Text style={{textAlign:'center', top:'35%', fontSize:16}}> Log Book </Text>
+                          BASE_COLOR={'#2196F3'} CLICK_COLOR={'#69B9F6'}>
+              <Text style={{textAlign:'center', color:'white', top:'35%', fontSize:18}}> Log Book </Text>
             </CustomButton>
           </View>
           <View style = {{flex:1,paddingRight:80}}>

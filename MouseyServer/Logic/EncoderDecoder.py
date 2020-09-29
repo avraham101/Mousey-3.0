@@ -38,6 +38,14 @@ class EncoderDecoder:
             return self.decodeRollerMsg(buffer)
         elif opCode == chr(Messages.FILE_OPCODE):
             return self.decodeFileMsg(buffer)
+        elif opCode == chr(Messages.LOGOUT_OPCODE):
+            print('recived logout msg')
+            return Messages.LogoutMsg()
+        elif opCode == chr(Messages.ACKLOGOUT_OPCODE):
+            return Messages.AckLogoutMsg()
+        elif opCode == chr(Messages.FIN_OPCODE):
+            print('recived fin msg')
+            return Messages.FinMsg()
         return None
 
     def decodeFoundMsg(self, buffer):
