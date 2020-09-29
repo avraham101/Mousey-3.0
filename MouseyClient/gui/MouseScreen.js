@@ -15,6 +15,7 @@ export default class MouseScreen extends Screen{
     this.logicManager = logicManager;
     this.clickTouchPad = this.clickTouchPad.bind(this);
     this.clickFileTransmit = this.clickFileTransmit.bind(this);
+    this.clickLogout = this.clickLogout.bind(this);
     this.clickLeft = this.clickLeft.bind(this);
     this.realseLeft = this.realseLeft.bind(this);
     this.clickRight = this.clickRight.bind(this);
@@ -31,6 +32,10 @@ export default class MouseScreen extends Screen{
   clickFileTransmit() {
     this.unsubscribeSensors();
     this.handler.navigate(new FilesScreen(this.handler, this.logicManager));
+  }
+
+  clickLogout() {
+    this.logicManager.logoutMousey();
   }
 
   clickLeft() {
@@ -77,7 +82,8 @@ export default class MouseScreen extends Screen{
   render = () => {
     return( 
       <ImageBackground source={require('./img/Mousey_Screen.png')} style={styles.container}>
-          <Menu handler={this.handler} clickTouchPad={this.clickTouchPad} clickFileTransmit={this.clickFileTransmit}/>
+          <Menu handler={this.handler} clickTouchPad={this.clickTouchPad} clickFileTransmit={this.clickFileTransmit}
+                                       clickLogout={this.clickLogout}/>
           <View style={{flex:1}}/>
           <View style={{flex:3, flexDirection:'row-reverse', backgroundColor:''}}>
             <CustomButton handler={this.handler}  onTouchStart={this.clickLeft} onTouchEnd={this.realseLeft} 

@@ -14,6 +14,7 @@ export default class FilesScreen extends Screen{
     //click function
     this.clickMousey = this.clickMousey.bind(this);
     this.clickTouchPad = this.clickTouchPad.bind(this);
+    this.clickLogout = this.clickLogout.bind(this);
     this.clickPrevFolder = this.clickPrevFolder.bind(this);
     this.clickNextFolder = this.clickNextFolder.bind(this);
     //send file properties
@@ -37,6 +38,10 @@ export default class FilesScreen extends Screen{
 
   clickTouchPad() {
     this.handler.navigate(new TouchPadScreen(this.handler, this.logicManager));
+  }
+
+  clickLogout() {
+    this.logicManager.logoutMousey();
   }
 
   clickPrevFolder(e) {
@@ -181,7 +186,7 @@ export default class FilesScreen extends Screen{
   render = () => {
       return ( 
         <ImageBackground source={require('./img/Files_Screen.png')} style={styles.container}>
-          <Menu handler={this.handler} clickMousey={this.clickMousey} clickTouchPad={this.clickTouchPad}/>
+          <Menu handler={this.handler} clickMousey={this.clickMousey} clickTouchPad={this.clickTouchPad} clickLogout={this.clickLogout}/>
           {this.renderComputerGate()}
           {this.renderSelectedFile()}
           <View style={{flex:1.5}}/>
