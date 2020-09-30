@@ -17,7 +17,7 @@ export default class MouseyHandler {
     this.gyroQueue = [];
     this.angleQueue = [];
     this.prevAngle = null;
-    this.windowHandler = new WindowHandler(11);
+    this.windowHandler = new WindowHandler(5);
   }
   
   /**

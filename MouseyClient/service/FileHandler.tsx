@@ -1,7 +1,10 @@
 import {Message} from './Messages';
 import {Folder, Item, createFolder, createFile} from './Folders';
 import ConnectionHandler from './ConnectionHandler';
-import {readDir, CachesDirectoryPath, DocumentDirectoryPath, DownloadDirectoryPath, readFile} from 'react-native-fs';
+import {readDir, readFile, CachesDirectoryPath, DocumentDirectoryPath, DownloadDirectoryPath, 
+        ExternalDirectoryPath, ExternalStorageDirectoryPath} from 'react-native-fs';
+import { PermissionsAndroid, CameraRoll } from 'react-native'
+
 export default class FileHandler {
 
   connectionHandler:ConnectionHandler;
@@ -13,13 +16,93 @@ export default class FileHandler {
 
   constructor(connectionHandler) {
     this.connectionHandler = connectionHandler;
-    this.path =  DownloadDirectoryPath; // '.';
     this.prevPaths = [];
     this.items = [];
     this.prevItems = [];
+    // this.setDownloadPath();
+    this.setImagePath();
+  }
+
+  /**
+   * The function return if we have permissions to the images folder
+   */
+  async checkPermession() {
+    let permission = PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+    let hasPermission = await PermissionsAndroid.check(permission);
+    if(!hasPermission) {
+      let status = await PermissionsAndroid.request(permission);
+      if(status !== 'granted') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * The function se the image path to the files then updaet them
+   */
+  async setImagePath() {
+    if(this.checkPermession()) {
+      this.path = 'Images';
+      this.getImages();
+    }
+    else {
+      console.log('Dont have premession to Image Folder');
+    }
+  }
+
+ /**
+  * The function get the Images from the camera roll folder
+  */
+ async getImages() {
+    await CameraRoll.getPhotos({
+      first: 20,
+      assetType: 'Photos',
+    })
+    .then(r => {
+      let photoes = r.edges;
+      console.log(photoes);
+    })
+    .catch((err) => {
+       console.log('Error getting the Images');
+    });
+  }
+
+  /**
+   * The function set the download path to the files then update them
+   */
+  setDownloadPath() {
+    this.path = DownloadDirectoryPath;
     this.getItems();
   }
 
+  /**
+   * The function set the document path to the files then update them
+   */
+  setDocumentPath() {
+    this.path = DocumentDirectoryPath ;
+    this.getItems();
+  }
+
+  /**
+   * The function set the external path to the files then update them
+   */
+  setExternalPath() {
+    this.path = ExternalDirectoryPath;
+    this.getItems();
+  }
+
+  /**
+   * The function set the external storage path to the files then update them
+   */
+  setExternalStoragePath() {
+    this.path = ExternalStorageDirectoryPath;
+    this.getItems();
+  }
+
+  /**
+   * The function get the item list from the current path
+   */
   async getItems() {
     await readDir(this.path).then(arr=>{
       let files:Item[] = [];

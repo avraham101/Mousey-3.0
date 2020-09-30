@@ -189,7 +189,10 @@ export default class FilesScreen extends Screen{
           <Menu handler={this.handler} clickMousey={this.clickMousey} clickTouchPad={this.clickTouchPad} clickLogout={this.clickLogout}/>
           {this.renderComputerGate()}
           {this.renderSelectedFile()}
-          <View style={{flex:1.5}}/>
+          <View style={{flex:1,}}/>
+          <View style={{flex:1, marginLeft:'5%', flexDirection:'row-reverse'}}>
+
+          </View>
           <View style={{flex:1, marginRight:'5%', marginLeft:'5%', backgroundColor:'#85A0C7', flexDirection:'row-reverse'}}>
               <View style={{flex:2, alignItems:'center'}}>
                 <Image source={require('./img/folder_p.png')} resizeMode='contain'/>

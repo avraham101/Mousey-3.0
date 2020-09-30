@@ -130,11 +130,9 @@ class MouseHandler:
 class ModelHandler:
 
     def __init__(self, path):
-        self.points = 11
-        self.pmap = {'ned': 0, 'up': 1, 'upleft': 2, 'left': 3, 'downleft': 4, 'right': 5,
-                     'upright': 6, 'downright': 7, 'down': 8}
-        self.pmaprev = {'ned': 0, 'right': 1, 'down': 2, 'left': 3, 'upleft': 4,
-                        'up': 5, 'upright': 6, 'downleft': 7, 'downright': 8}
+        self.points = 5
+        self.pmap = {'upleft': 0, 'left': 1, 'up': 2, 'upright': 3, 'downright': 4, 'right': 5,
+                     'down': 6, 'ned': 7, 'downleft': 8}
         self.map = {self.pmap[x]: x for x in self.pmap}
         with graph.as_default():
             self.session = Session(graph=graph)
