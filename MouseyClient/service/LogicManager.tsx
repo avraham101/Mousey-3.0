@@ -224,4 +224,36 @@ export default class LogicManager {
     this.connectionHandler.sendLogout();
   }
 
+  /**
+   * This function set the download Path for the file system
+   * @param {*} promise a function for refresh when have the files
+   */
+  setDownloadPath(promise) {
+    this.fileHandler.setDownloadPath(promise);
+  } 
+
+  /**
+   * This function set the Documents path for the file system
+   * @param {*} promise a function for refresh when have the files
+   */
+  setDocumentPath(promise) {
+    this.fileHandler.setDocumentPath(promise);
+  }
+
+  /**
+   * This function set the External path for the file system
+   * @param {*} promise a function for refresh when have the files
+   */
+  setExternalPath(promise) {
+    this.fileHandler.setExternalStoragePath(promise);
+  }
+
+  /**
+   * This function set the Images path for the file system
+   * @param {*} promise a function for refresh when have the files
+   */
+  setImagePath(promise) {
+    this.fileHandler.setImagePath(promise);
+  }
+
 }

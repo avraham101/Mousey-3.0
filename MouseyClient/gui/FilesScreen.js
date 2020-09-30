@@ -17,6 +17,7 @@ export default class FilesScreen extends Screen{
     this.clickLogout = this.clickLogout.bind(this);
     this.clickPrevFolder = this.clickPrevFolder.bind(this);
     this.clickNextFolder = this.clickNextFolder.bind(this);
+    this.clickPath = this.clickPath.bind(this);
     //send file properties
     this.selectedFile = null;
     this.selectedFileEvent = null;
@@ -24,12 +25,16 @@ export default class FilesScreen extends Screen{
     this.selectFile = this.selectFile.bind(this);
     this.moveSelectFile = this.moveSelectFile.bind(this);
     this.endSelectFile = this.endSelectFile.bind(this);
+    //select path properties
+    this.choises = ['Os Files', 'Downloads', 'Images', 'Docs'];
+    this.selectedPath = this.choises[0];
     //reder function 
     this.renderItems = this.renderItems.bind(this);
     this.renderItem = this.renderItem.bind(this);
     this.renderLogo = this.renderLogo.bind(this);
     this.renderSelectedFile = this.renderSelectedFile.bind(this);
     this.renderComputerGate = this.renderComputerGate.bind(this);
+    this.renderPathSelect = this.renderPathSelect.bind(this);
   };
 
   clickMousey() {
@@ -82,10 +87,28 @@ export default class FilesScreen extends Screen{
     this.selectedFileEvent = null;
   }
 
+  clickPath(name) {
+    if(name=='Downloads' & this.selectedPath!=name) {
+      this.logicManager.setDownloadPath(()=>this.handler.refresh()); 
+    }
+    else if(name=='Docs' & this.selectedPath!=name) {
+      this.logicManager.setDocumentPath(()=>this.handler.refresh());
+    }
+    else if(name=='Images' & this.selectedPath!=name) {
+      this.logicManager.setImagePath(()=>this.handler.refresh());
+    }
+    else if(name=='Os Files' & this.selectedPath!=name) {
+      this.logicManager.setExternalPath(()=>this.handler.refresh());
+    }
+    this.selectedPath = name;
+    this.handler.refresh();
+  }
+
   renderLogo(item) {
     switch(item.tag) {
       case 'File': return <Image source={require('./img/file_c.png')}/>;
       case 'Folder': return <Image source={require('./img/folder_c.png')}/>;
+      case 'Image': return <Image source={require('./img/image_c.png')}/>;
       default: return <Text> U </Text>;
     }
   }
@@ -183,6 +206,29 @@ export default class FilesScreen extends Screen{
     }
   }
 
+  renderPathSelect = () => {
+    let output = [];
+    this.choises.forEach((ch,i) => {
+      if(this.selectedPath===ch) {
+        output.push(<CustomButton key={ch} handler={this.handler} flex={1} marginRight={'1%'} marginLeft={'1%'} onTouchEnd={()=>this.clickPath(ch)} 
+                            marginTop={'1%'} marginBottom={'1%'}
+                            borderColor={'white'} BASE_COLOR={'#2196F3'} CLICK_COLOR={'#69B9F6'}>
+                        <Text style={{textAlign:'center', color:'white', top:'30%', fontSize:14, fontWeight:'bold'}}> {ch} </Text>
+                    </CustomButton>);
+      }
+      else {
+        output.push(<CustomButton key={i} handler={this.handler} flex={1} marginRight={'1%'} marginLeft={'1%'} onTouchEnd={()=>this.clickPath(ch)} 
+                            marginTop={'1%'} marginBottom={'1%'}
+                            BASE_COLOR={'#85A0C7'} CLICK_COLOR={'#69B9F6'}>
+                        <Text style={{textAlign:'center', color:'black', top:'30%', fontSize:14, }}> {ch} </Text>
+                    </CustomButton>);
+      }
+    });
+    return (<View style={{flex:1, marginTop:'3%', marginLeft:'5%', marginRight:'5%', backgroundColor:'#48658D', flexDirection:'row-reverse'}}>
+              {output}
+            </View>);
+  }
+
   render = () => {
       return ( 
         <ImageBackground source={require('./img/Files_Screen.png')} style={styles.container}>
@@ -190,9 +236,7 @@ export default class FilesScreen extends Screen{
           {this.renderComputerGate()}
           {this.renderSelectedFile()}
           <View style={{flex:1,}}/>
-          <View style={{flex:1, marginLeft:'5%', flexDirection:'row-reverse'}}>
-
-          </View>
+          {this.renderPathSelect()}
           <View style={{flex:1, marginRight:'5%', marginLeft:'5%', backgroundColor:'#85A0C7', flexDirection:'row-reverse'}}>
               <View style={{flex:2, alignItems:'center'}}>
                 <Image source={require('./img/folder_p.png')} resizeMode='contain'/>
@@ -207,7 +251,7 @@ export default class FilesScreen extends Screen{
                 <Text style={{textAlign:'center', paddingTop:'30%', fontSize:24}}> ... </Text>
               </CustomButton>
           </View>
-          <View style={{flex:6, marginRight:'5%', marginLeft:'5%', marginBottom:'20%', backgroundColor:'#C8DDF1'}}>
+          <View style={{flex:6, marginRight:'5%', marginLeft:'5%', marginBottom:'15%', backgroundColor:'#C8DDF1'}}>
             <ScrollView>
               {this.renderItems()}
             </ScrollView>

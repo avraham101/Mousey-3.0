@@ -1,9 +1,10 @@
 import {Message} from './Messages';
-import {Folder, Item, createFolder, createFile} from './Folders';
+import {Folder, Item, createFolder, createFile, createImage} from './Folders';
 import ConnectionHandler from './ConnectionHandler';
 import {readDir, readFile, CachesDirectoryPath, DocumentDirectoryPath, DownloadDirectoryPath, 
         ExternalDirectoryPath, ExternalStorageDirectoryPath} from 'react-native-fs';
-import { PermissionsAndroid, CameraRoll } from 'react-native'
+import { PermissionsAndroid } from 'react-native'
+import CameraRoll from "@react-native-community/cameraroll";
 
 export default class FileHandler {
 
@@ -20,7 +21,8 @@ export default class FileHandler {
     this.items = [];
     this.prevItems = [];
     // this.setDownloadPath();
-    this.setImagePath();
+    this.setExternalStoragePath();
+    // this.setImagePath();
   }
 
   /**
@@ -40,11 +42,13 @@ export default class FileHandler {
 
   /**
    * The function se the image path to the files then updaet them
+   * @param {*} promise a function for execute when have the files
    */
-  async setImagePath() {
+  async setImagePath(promise?) {
     if(this.checkPermession()) {
       this.path = 'Images';
-      this.getImages();
+      this.items = [];
+      this.getImages(promise);
     }
     else {
       console.log('Dont have premession to Image Folder');
@@ -53,15 +57,25 @@ export default class FileHandler {
 
  /**
   * The function get the Images from the camera roll folder
+  * @param {*} promise a function for execute when have the files
   */
- async getImages() {
+ async getImages(promise?) {
+   let n = 20; 
     await CameraRoll.getPhotos({
-      first: 20,
+      first: n,
       assetType: 'Photos',
+      include: ['filename', 'fileSize',]
     })
     .then(r => {
+      let images:Item[] = [];
       let photoes = r.edges;
-      console.log(photoes);
+      photoes.forEach( (p,index) => {
+        images.push(createImage(p.node.image,p.node.type,p.node.group_name,p.node.timestamp));
+      })
+      this.items = images;
+      if(promise!=undefined) {
+        promise();
+      }
     })
     .catch((err) => {
        console.log('Error getting the Images');
@@ -70,40 +84,49 @@ export default class FileHandler {
 
   /**
    * The function set the download path to the files then update them
+   * @param {*} promise a function for execute when have the files
    */
-  setDownloadPath() {
+  setDownloadPath(promise?) {
     this.path = DownloadDirectoryPath;
-    this.getItems();
+    this.items = [];
+    this.getItems(promise);
   }
 
   /**
    * The function set the document path to the files then update them
+   * @param {*} promise a function for execute when have the files
    */
-  setDocumentPath() {
+  setDocumentPath(promise?) {
     this.path = DocumentDirectoryPath ;
-    this.getItems();
+    this.items = [];
+    this.getItems(promise);
   }
 
   /**
    * The function set the external path to the files then update them
+   * @param {*} promise a function for execute when have the files
    */
-  setExternalPath() {
+  setExternalPath(promise?) {
     this.path = ExternalDirectoryPath;
-    this.getItems();
+    this.items = [];
+    this.getItems(promise);
   }
 
   /**
    * The function set the external storage path to the files then update them
+   * @param {*} promise a function for execute when have the files
    */
-  setExternalStoragePath() {
+  setExternalStoragePath(promise?) {
     this.path = ExternalStorageDirectoryPath;
-    this.getItems();
+    this.items = [];
+    this.getItems(promise);
   }
 
   /**
    * The function get the item list from the current path
+   * @param {*} promise a function for execute when have the files
    */
-  async getItems() {
+  async getItems(promise?) {
     await readDir(this.path).then(arr=>{
       let files:Item[] = [];
       arr.forEach(node =>{
@@ -115,6 +138,9 @@ export default class FileHandler {
         }
       });
       this.items = files;
+      if(promise!=undefined) {
+        promise();
+      }
     }).catch(reason=>{
       console.log('CANT GET ITEMS REASON');
       console.log(reason);
@@ -127,6 +153,10 @@ export default class FileHandler {
   getCurrentName() {
     if(this.path == DownloadDirectoryPath) 
       return 'Downloads';
+    if(this.path == ExternalStorageDirectoryPath)
+      return 'Operating System Files';
+    if(this.path == DocumentDirectoryPath)
+      return 'Documents';
     return this.path;
   }
 

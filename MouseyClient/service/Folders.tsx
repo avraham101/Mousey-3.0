@@ -32,7 +32,9 @@ export interface Image {
     type: string,
     date: Date,
     size: string,
+    groupname:string,
     content: any,
+    isContentReady : ()=>boolean,
 }
 
 //----------------------------------------------- predicats -----------------------------------------------
@@ -60,6 +62,18 @@ var getType = (name:string):string => {
 
 export const createFile = (item:ReadDirItem, prevPath:string, content:any=null):File => {
     let output:File = {tag:'File', name:item.name, path:item.path, type:getType(item.name), date:item.mtime, size:item.size, content:content, isContentReady:null};
+    if(content==null) {
+        output.isContentReady = ()=>false;
+    } 
+    else {
+        output.isContentReady = ()=>true;
+    }
+    return output;
+}
+
+export const createImage = (item:any, type:string, groupname:string, timestamp:number, content:any=null):Image => {
+    let output:Image = {tag:'Image', name:item.filename, path:item.uri, type: type, date:new Date(timestamp) , size:item.fileSize, groupname:groupname, 
+        content:content, isContentReady:null}
     if(content==null) {
         output.isContentReady = ()=>false;
     } 
