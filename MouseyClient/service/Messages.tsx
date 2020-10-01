@@ -27,6 +27,7 @@ export var SPLIT_MSG = 29;
 export var RECIVE_SPLIT_MSG = 30;
 export var ACK_LOGOUT_MSG = 31;
 export var FIN_MSG = 32;
+export var MOUSEY_BATTERY_MSG = 33;
 
 //----------------------------------------------- interfaces -----------------------------------------------
 interface SearchMsg {
@@ -149,6 +150,15 @@ interface FinMsg {
     toString:()=>string,
 }
 
+interface MouseyBatteryMsg {
+    tag:'MouseyBatteryMsg',
+    opcode:number,
+    battery:number,
+    setBattery: (battery:number) => void,
+    isReady:()=>boolean,
+    toString:()=>string,
+}
+
 //----------------------------------------------- predicats -----------------------------------------------
 export const isSearchMsg = (x:any):x is SearchMsg => x.tag === "SearchMsg";
 export const isFoundMsg = (x:any):x is FoundMsg => x.tag === "FoundMsg";
@@ -164,6 +174,7 @@ export const isFileMsg = (x:any): x is FileMsg => x.tag === 'FileMsg';
 export const isLogoutMsg = (x:any): x is LogoutMsg => x.tag === 'LogoutMsg';
 export const isAckLogoutMsg = (x:any): x is AckLogoutMsg => x.tag === 'AckLogoutMsg';
 export const isFinMsg = (x:any): x is FinMsg => x.tag === 'FinMsg';
+export const isMouseyBatteryMsg = (x:any): x is MouseyBatteryMsg => x.tag ==='MouseyBatteryMsg';
 
 //-------------------------------------------- constractors -----------------------------------------------
 export const createSearchMsg = (key:string):SearchMsg => {
@@ -363,6 +374,29 @@ export const createFinMsg = ():FinMsg => {
         plainText += String.fromCharCode(0);
         return plainText;
     };
+    return msg;
+}
+
+export const createMouseyBatterMsg = (battery:number):MouseyBatteryMsg => {
+    let msg:MouseyBatteryMsg = {tag:"MouseyBatteryMsg", opcode:MOUSEY_BATTERY_MSG, battery:battery, 
+        setBattery: undefined, isReady:undefined, toString:undefined};
+    let setBattery = (battery:number) => {
+        battery = battery * 100;
+        battery = Math.round(battery);
+        battery = parseInt(''+battery);
+        msg.battery = battery;
+    } 
+    let isReady = ():boolean => {
+        return msg.battery!=undefined; 
+    }
+    let toString = ():string => {
+        let plainText = String.fromCharCode(msg.opcode) 
+        plainText += padString(''+msg.battery, 3);
+        return plainText;
+    }
+    msg.setBattery = setBattery;
+    msg.isReady = isReady;
+    msg.toString = toString;
     return msg;
 }
 

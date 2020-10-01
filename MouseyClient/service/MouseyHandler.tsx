@@ -107,7 +107,7 @@ export default class MouseyHandler {
   sendRoller(rollerSpeed: number) {
     let msg:Message = createRollerMsg(rollerSpeed);
     this.connectionHandler.send(msg);
-  }
+  }   
 
 }
 

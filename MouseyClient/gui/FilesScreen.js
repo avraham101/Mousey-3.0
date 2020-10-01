@@ -108,7 +108,9 @@ export default class FilesScreen extends Screen{
     switch(item.tag) {
       case 'File': return <Image source={require('./img/file_c.png')}/>;
       case 'Folder': return <Image source={require('./img/folder_c.png')}/>;
-      case 'Image': return <Image source={require('./img/image_c.png')}/>;
+      case 'Image': 
+        return<Image style={{ width: 50, height: 50}} source={{ uri: item.path }}/>;
+      return <Image source={require('./img/image_c.png')}/>;
       default: return <Text> U </Text>;
     }
   }
@@ -224,7 +226,7 @@ export default class FilesScreen extends Screen{
                     </CustomButton>);
       }
     });
-    return (<View style={{flex:1, marginTop:'3%', marginLeft:'5%', marginRight:'5%', backgroundColor:'#48658D', flexDirection:'row-reverse'}}>
+    return (<View style={{flex:1, marginTop:'4%', marginLeft:'5%', marginRight:'5%', backgroundColor:'#48658D', flexDirection:'row-reverse'}}>
               {output}
             </View>);
   }

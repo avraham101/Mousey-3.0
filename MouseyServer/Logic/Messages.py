@@ -15,6 +15,7 @@ SPLIT_OPCODE = 29
 RECIVE_SPLIT_OPCODE = 30
 ACKLOGOUT_OPCODE = 31
 FIN_OPCODE = 32
+MOUSEY_BATTERY_OPCODE = 33
 
 
 class Message:
@@ -197,9 +198,9 @@ class FileMsg(Message):
 
     def getFileData(self):
         return self.data
-    
+
 class LogoutMsg(Message):
-    
+
     def __init__(self):
         super().__init__(LOGOUT_OPCODE)
 
@@ -222,4 +223,11 @@ class FinMsg(Message):
     def encode(self):
         return bytes([0])
 
+class MouseyBatteryMsg(Message):
 
+    def __init__(self, battery):
+        super().__init__(MOUSEY_BATTERY_OPCODE)
+        self.battery = battery
+
+    def getBattery(self):
+        return self.battery

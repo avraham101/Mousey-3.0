@@ -2,7 +2,8 @@ import dgram from 'react-native-udp';
 import EncoDecoder from './EncoderDecoder';
 import {getSystemName, getDeviceName, getUniqueId, getBatteryLevel, } from 'react-native-device-info'
 import {createFoundMsg, isSearchMsg, isConnectMsg, createGenerationMsg, createSplitMsgs, isReciveSpliteMsg, 
-        createFileMsg, createLogoutMsg, isLogoutMsg, createAckLogoutMsg, isFinMsg, isAckLogoutMsg, createFinMsg} from './Messages'
+        createFileMsg, createLogoutMsg, isLogoutMsg, createAckLogoutMsg, isFinMsg, isAckLogoutMsg, createFinMsg,
+        createMouseyBatterMsg} from './Messages'
 
 var port_mousey = undefined;
 var address_mousey = undefined;
@@ -26,6 +27,8 @@ export default class ConnectionHandler {
    */
   resetConection = () => {
     lisener = null;
+    port_mousey = undefined;
+    address_mousey = undefined;
     this.socket.close();
   }
 
@@ -38,6 +41,7 @@ export default class ConnectionHandler {
     let sendMouseFound = this.sendMouseFound;
     let sendAckLogout = this.sendAckLogout;
     let sendFin = this.sendFin;
+    let startBatteryMsgLoop =  this.startBatteryMsgLoop;
     //sender info stracture "address": , "family": , "port": , "size":
     this.socket.on('message', function(msg, senderInfo) {
         msg = encodeco.decode(msg);
@@ -48,6 +52,7 @@ export default class ConnectionHandler {
         }
         else if(isConnectMsg(msg)) {
           this.key_toServer = msg.key;
+          startBatteryMsgLoop();
           promise(msg.key)
         }
         else if(isLogoutMsg(msg)) {
@@ -236,6 +241,35 @@ export default class ConnectionHandler {
     this.send(msg);
     this.resetConection();
     this.logoutPromise();
+    
+  }
+
+  
+  /**
+   * The function send a Battery Msg to the server
+   */
+  sendBatteryMsg = () => {
+    let send = (msg)=>{
+      this.send(msg);
+    };
+    let msg = createMouseyBatterMsg(undefined);
+    getBatteryLevel().then(state =>{
+      msg.setBattery(state);
+      console.log(state);
+      send(msg);
+    });
+  }
+  
+  /**
+  * The function create a loop of requests to check when the battery level is down and send it to the server
+  * Every 5 sec send a battery msg to the server.
+  */    
+  startBatteryMsgLoop = () => {
+    let interval = 5000;
+    this.sendBatteryMsg();
+    if(address_mousey!=undefined && port_mousey!=undefined) {
+      setTimeout(this.startBatteryMsgLoop,interval);
+    }
   }
 
 }

@@ -39,12 +39,13 @@ class SearchManager(Threads.Thread):
     # msg: (Object) The Msg recived form the client
     # ip: (str) the ip recived from
     def addConnection(self, msg, ip):
-        try:
-            self.CONNECTIONS[ip]
-            # do nothing it is already exits a mousey from this ip
-        except KeyError:
-            self.CONNECTIONS[ip] = msg.toString()
-            self.connections_data[ip] = msg
+        if msg.opcode == Messages.FOUND_OPCODE:
+            try:
+                self.CONNECTIONS[ip]
+                # do nothing it is already exits a mousey from this ip
+            except KeyError:
+                self.CONNECTIONS[ip] = msg.toString()
+                self.connections_data[ip] = msg
 
     # The function check if a connection is avalable
     # connection: (str) the name of the connection

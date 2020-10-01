@@ -56,3 +56,15 @@ class LogicManager:
     # The function return the last direction the mouse moved to.
     def getDirection(self):
         return self.connectionManager.getDirection()
+
+    # The function open the file selected from the list
+    def openFile(self, name):
+        self.connectionManager.openFile(name)
+
+    # The function save a file to a given path
+    def saveFileWithPath(self, name, path):
+        self.connectionManager.saveFileWithPath(name, path)
+
+    # The function return the real name of the file
+    def getFileName(self, refactor_name):
+        return self.connectionManager.getFileName(refactor_name)

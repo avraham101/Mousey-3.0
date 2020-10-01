@@ -107,7 +107,7 @@ export default class Menu extends Component{
   renderMenuButton() {
     if(this.menuOn) {
       return (
-        <CustomButton handler={this.props.handler} onTouchEnd={this.clickMenu} zIndex={1} height={'11%'} width={'90%'} 
+        <CustomButton handler={this.props.handler} onTouchStart={this.clickMenu} zIndex={1} height={'11%'} width={'90%'} 
                       borderWidth={1} borderTopLeftRadius={25} borderTopRightRadius={25}
                       BASE_COLOR={'#4F7495'} CLICK_COLOR={'#4A94FC'} borderColor={'black'}>
             <Text style={{textAlign:'center', marginTop:'15%', color:'white' }}> ... </Text>          
@@ -115,7 +115,7 @@ export default class Menu extends Component{
       ); 
     }
     return (
-      <CustomButton handler={this.props.handler} onTouchEnd={this.clickMenu} margin={'2%'} height={'100%'}
+      <CustomButton handler={this.props.handler} onTouchStart={this.clickMenu} margin={'2%'} height={'100%'}
                     borderRadius={50} borderWidth={1}
                     BASE_COLOR={'#4F7495'} CLICK_COLOR={'#4A94FC'} borderColor={'black'}>
           <Text style={{textAlign:'center',  marginTop:'25%', color:'white' }}> Menu </Text>

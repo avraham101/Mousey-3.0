@@ -89,6 +89,8 @@ class ConnectionManager(Threads.Thread):
             self.sendAckLogout()
         elif msg.opcode == Messages.ACKLOGOUT_OPCODE:
             self.sendFin()
+        elif msg.opcode == Messages.MOUSEY_BATTERY_OPCODE:
+            self.updateBattery(msg)
         else:
             return
 
@@ -125,6 +127,23 @@ class ConnectionManager(Threads.Thread):
         self.connectionHandler.sendMsg(msg, (self.ip, self.port))
         self.logged = False
         self.logoutFunc()
+
+    # The function update the battery in connection manger
+    def updateBattery(self,msg):
+        self.battery = msg.getBattery()
+        print('Battery Updated ', self.battery)
+
+    # The function open the file selected from the list
+    def openFile(self, name):
+        self.fileHandler.openFile(name)
+
+    # The function save a file to a given path
+    def saveFileWithPath(self, name, path):
+        self.fileHandler.saveFileWithPath(name, path)
+
+    # The function return the real name of the file
+    def getFileName(self, refactor_name):
+        return self.fileHandler.getFileName(refactor_name)
 
     # The function is the funing function of the thread
     def run(self):

@@ -250,7 +250,7 @@ export default class LogicManager {
 
   /**
    * This function set the Images path for the file system
-   * @param {*} promise a function for refresh when have the files
+   * @param {*} promise a functgion for refresh when have the files
    */
   setImagePath(promise) {
     this.fileHandler.setImagePath(promise);

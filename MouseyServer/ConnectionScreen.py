@@ -1,5 +1,5 @@
 import os
-from tkinter import Tk, NW, CENTER, Frame, Label, Canvas, Button, Listbox, PhotoImage, Scrollbar
+from tkinter import Tk, NW, CENTER, Frame, Label, Canvas, Button, Listbox, PhotoImage, Scrollbar, filedialog
 from Logic import LogicManager
 
 # COLORS
@@ -181,9 +181,9 @@ class SearchFrame:
         self.frame = Canvas(root, bg=DARK_BLUE)
         self.frame.create_image(0, 0, anchor=NW, image=self.backgroundImg)
         self.frame.pack(expand="true", fill="both")
-        padyClients = (168, 0)
+        padyClients = (144, 0)
         padyButtons = 12
-        padx = (60, 0)
+        padx = (18, 0)
         y_grid = 0
         y_grid = self.initClients(self.frame, y_grid, padyClients, padx)
         self.initButtons(self.frame, y_grid, 0, padx, padyButtons)
@@ -191,8 +191,11 @@ class SearchFrame:
 
     def initClients(self, frame, y_grid, pady, padx):
         rapper_frame = Frame(frame, bg=GRAY_BLUE)
-        rapper_frame.grid(row=y_grid, column=0, rowspan=1, columnspan=8, padx=padx, pady=pady)
-        self.clients_list = Listbox(rapper_frame, bd=0, font=LISTBOX_FONT)
+        rapper_frame.grid(row=y_grid, column=0, rowspan=1, columnspan=4, padx=padx, pady=pady)
+        label = Label(rapper_frame, text='Select your Smartphone from the list', width=32, font=("Calibri", 12),
+                               bg=DARK_GRAY_BLUE, fg=WHITE)
+        label.pack()
+        self.clients_list = Listbox(rapper_frame, width=30, bd=0, font=LISTBOX_FONT)
         # set the listbox contains func
         self.clients_list.contains = lambda x: x in self.clients_list.get(0, "end")
         self.clients_list.pack(side="left", fill="y", padx=(2, 0), pady=2)
@@ -312,12 +315,17 @@ class ConnectedFrame:
     def initFilesView(self, frame, y_grid, x_grid, pady, padx):
         inner_frame = Frame(frame, bg=BLACK)
         inner_frame.grid(row=y_grid, column=x_grid, rowspan=2, columnspan=1, padx=padx, pady=pady)
-        title = Label(inner_frame, text='Recived Files:', width=14, font=BATTERY_HEADER_FONT,
-                          bg=DARK_GRAY_BLUE, fg=WHITE)
+        title = Label(inner_frame, text='Recived Files:', width=14, font=BATTERY_HEADER_FONT, bg=DARK_GRAY_BLUE,
+                      fg=WHITE)
         title.pack()
-        self.files_list = Listbox(inner_frame, bd=0, font=LISTBOX_FONT, width=15)
+        def open(event):
+            file = self.files_list.curselection()
+            file = self.files_list.get(file)
+            self.logicManger.openFile(file)
+        self.files_list = Listbox(inner_frame, bd=0, font=LISTBOX_FONT, width=16)
         self.files_list.pack(side="left", fill="y", padx=(1, 0), pady=1)
         self.files_list.contains = lambda x: x in self.files_list.get(0, "end")
+        self.files_list.bind('<Double-1>', open)
         scrollbar = Scrollbar(inner_frame, orient="vertical")
         scrollbar.config(command=self.files_list)
         scrollbar.pack(side="right", fill="y", padx=(0, 2), pady=1)
@@ -340,27 +348,32 @@ class ConnectedFrame:
         print('updated frame')
         self.getFiles()
         self.getDirection()
+        self.getBattery()
         self.frame.after(self.timeUpdate, self.updateFrame)
-
-    # The function refactor a file name
-    def refactorFileName(self, name, maxi=13):
-        if len(name) > maxi:
-            prefix = name[0:maxi - 7]
-            sefix = name[-7:]
-            return prefix + ' ... ' + sefix
-        return name
 
     def getFiles(self):
         files = self.logicManger.getFiles()
         for file in files:
-            file = self.refactorFileName(file)
             if not self.files_list.contains(file):
+                name = self.logicManger.getFileName(file)
+                arr = name.split('.')
+                print('name recived ', name)
+                path = filedialog.asksaveasfilename(initialfile=name, filetypes=[(arr[-1], '*.'+arr[-1])])
+                arr_p = path.split('/')
+                if name != arr_p[-1]:
+                    path += '.'+arr[-1]
+                self.logicManger.saveFileWithPath(file, path)
                 index = self.files_list.size()
                 self.files_list.insert(index, file)
 
     def getDirection(self):
         direction = self.logicManger.getDirection()
         self.moveLabel['text'] = direction
+
+    def getBattery(self):
+        battery = self.logicManger.getBattery()
+        battery = str(battery) + '%   '
+        self.batteryLabel['text'] = battery
 
 # This is the main function
 def main():

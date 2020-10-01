@@ -46,6 +46,8 @@ class EncoderDecoder:
         elif opCode == chr(Messages.FIN_OPCODE):
             print('recived fin msg')
             return Messages.FinMsg()
+        elif opCode == chr(Messages.MOUSEY_BATTERY_OPCODE):
+            return self.decodeBattryMsg(buffer)
         return None
 
     def decodeFoundMsg(self, buffer):
@@ -165,6 +167,13 @@ class EncoderDecoder:
         size, data = struct.unpack_from('20s' + str(size) + 's', buffer, offset)
         data = str(data, "utf-8")
         return Messages.FileMsg(name, date, fileSize, data)
+
+    def decodeBattryMsg(self, buffer):
+        offset = 0
+        opcode, batrery = struct.unpack_from('1s3s', buffer, offset)
+        batrery = str(batrery, "utf-8")
+        batrery = cleanString(batrery)
+        return Messages.MouseyBatteryMsg(batrery)
 
     def decodeString(self, s):
         opCode = s[0]
