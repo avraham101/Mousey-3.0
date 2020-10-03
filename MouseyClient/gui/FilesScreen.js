@@ -28,6 +28,7 @@ export default class FilesScreen extends Screen{
     //select path properties
     this.choises = ['Os Files', 'Downloads', 'Images', 'Docs'];
     this.selectedPath = this.choises[0];
+    this.logicManager.setExternalPath(()=>this.handler.refresh());
     //reder function 
     this.renderItems = this.renderItems.bind(this);
     this.renderItem = this.renderItem.bind(this);

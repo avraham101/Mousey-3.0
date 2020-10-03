@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import base64
 
 SEARCH_OPCODE = 19
 FOUND_OPCODE = 20
@@ -16,7 +17,16 @@ RECIVE_SPLIT_OPCODE = 30
 ACKLOGOUT_OPCODE = 31
 FIN_OPCODE = 32
 MOUSEY_BATTERY_OPCODE = 33
+START_VIEWER_OPCODE = 34
+VIEWER_OPCODE = 35
+END_VIEWER_OPCODE = 36
+ACK_END_VIEWER_OPCODE = 37
+ZOOM_OPCODE = 38
 
+def fixString(string, size):
+    while len(string) < size:
+        string += '\0'
+    return string
 
 class Message:
     def __init__(self, opcode):
@@ -129,6 +139,7 @@ class SplitMsg(Message):
         super().__init__(SPLIT_OPCODE)
         self.index = index
         self.total = total
+        self.size = len(data)
         self.data = data
 
     def getIndex(self):
@@ -140,6 +151,12 @@ class SplitMsg(Message):
     def getData(self):
         return self.data
 
+    def encode(self):
+        index = fixString(str(self.index), 10)
+        total = fixString(str(self.total), 10)
+        msgSize = len(self.data)
+        msgSize = fixString(str(msgSize), 10)
+        return index.encode() + total.encode() + msgSize.encode() + self.data
 
 class ReciveSplitMsg(Message):
 
@@ -231,3 +248,46 @@ class MouseyBatteryMsg(Message):
 
     def getBattery(self):
         return self.battery
+
+class StartViewerMsg(Message):
+
+    def __init__(self):
+        print('resived start view msg')
+        super().__init__(START_VIEWER_OPCODE)
+
+class ViewerMsg(Message):
+
+    def __init__(self, value, size):
+        super().__init__(VIEWER_OPCODE)
+        self.size = size
+        self.value = value
+
+    def encode(self):
+        data = base64.b64encode(self.value)
+        size = str(len(data))
+        while len(size) < 10:
+            size += '\0'
+        return size.encode() + data
+
+class EndViewerMsg(Message):
+
+    def __init__(self):
+        super().__init__(END_VIEWER_OPCODE)
+
+class AckEndViewerMsg(Message):
+
+    def __init__(self):
+        super().__init__(ACK_END_VIEWER_OPCODE)
+
+    def endode(self):
+        return bytes([0])
+
+class ZoomMsg(Message):
+
+    def __init__(self, state):
+        super().__init__(ZOOM_OPCODE)
+        self.state = state
+
+    def getState(self):
+        return self.state
+

@@ -4,6 +4,7 @@ import CustomButton from './CustomButton';
 
 export default class Menu extends Component{
 
+  //TODO: no more needed can delete this
   PATH_MOUSEY_OFF = require('./img/Button_Mousey.png');
   PATH_MOUSEY_ON = require('./img/Button_Mousey_Click.png');
   PATH_TOUCH_OFF = require('./img/Button_Pad.png');
@@ -33,6 +34,8 @@ export default class Menu extends Component{
     this.pathLogout = this.PATH_LOGOUT_OFF;
     this.releaseLogout = this.releaseLogout.bind(this);
     this.clickLogout = this.clickLogout.bind(this);
+    //Viewer properties
+    this.clickViewer = this.clickViewer.bind(this);
   };
 
   clickMenu() {
@@ -77,29 +80,45 @@ export default class Menu extends Component{
     }
   }
 
+  clickViewer() {
+    if(this.props.clickViewer) {
+      this.props.clickViewer();
+    }
+  }
+
   releaseLogout() {
     this.pathLogout = this.PATH_LOGOUT_OFF;
   }
 
   renderMenu() {
-    return <View style={{height:'90%', width:'90%', zIndex:1,
+    return <View style={{height:'90%', width:'90%', zIndex:2,
                         backgroundColor: 'rgba(1, 29, 69, 0.68)',}}>
             {/* <View style={{flex:1}}/> */}
+
               <CustomButton handler={this.props.handler} onTouchStart={this.clickMousey}
-                            flex={2} margin={'3%'} marginTop={'10%'}>
-                <Image source={this.pathMousey} resizeMode='contain' style={{marginTop:'10%', marginLeft:'1%'}}/>
+                            flex={2} margin={'3%'} marginTop={'10%'} borderColor={'black'} borderWidth={2} borderRadius={25} 
+                            BASE_COLOR={'#2196F3'} CLICK_COLOR={'#69B9F6'}>
+                  <Text style={{textAlign:'center', color:'white', top:'35%', fontSize:18, }}> Mousey </Text>
               </CustomButton>
               <CustomButton handler={this.props.handler} onTouchStart={this.clickTouchPad}
-                            flex={2} margin={'3%'}>
-                <Image source={this.pathTouchPad} resizeMode='contain' style={{marginTop:'10%', marginLeft:'1%'}}/>
+                            flex={2} margin={'3%'} borderWidth={2} borderRadius={25} 
+                            BASE_COLOR={'#2196F3'} CLICK_COLOR={'#69B9F6'}>
+                  <Text style={{textAlign:'center', color:'white', top:'35%', fontSize:18, }}> Touch Pad </Text>
               </CustomButton>
               <CustomButton handler={this.props.handler} onTouchStart={this.clickFileTransmit}
-                            flex={2} margin={'3%'}>
-                <Image source={this.pathFiles} resizeMode='contain' style={{marginTop:'10%', marginLeft:'1%'}}/>
+                            flex={2} margin={'3%'} borderWidth={2} borderRadius={25} 
+                            BASE_COLOR={'#2196F3'} CLICK_COLOR={'#69B9F6'}>
+                  <Text style={{textAlign:'center', color:'white', top:'35%', fontSize:18, }}> Files </Text>
+              </CustomButton>
+              <CustomButton handler={this.props.handler} onTouchStart={this.clickViewer}
+                            flex={2} margin={'3%'} borderWidth={2} borderRadius={25} 
+                            BASE_COLOR={'#2196F3'} CLICK_COLOR={'#69B9F6'}>
+                  <Text style={{textAlign:'center', color:'white', top:'35%', fontSize:18, }}> Viewer </Text>
               </CustomButton>
               <CustomButton handler={this.props.handler} onTouchStart={this.clickLogout}
-                            flex={2} margin={'3%'}>
-                <Image source={this.pathLogout} resizeMode='contain' style={{marginTop:'10%', marginLeft:'1%'}}/>
+                            flex={2} margin={'3%'} borderWidth={2} borderRadius={25} 
+                            BASE_COLOR={'#2196F3'} CLICK_COLOR={'#69B9F6'}>
+                  <Text style={{textAlign:'center', color:'white', top:'35%', fontSize:18, }}> Logout </Text>
               </CustomButton>
             </View> 
   }
@@ -107,7 +126,7 @@ export default class Menu extends Component{
   renderMenuButton() {
     if(this.menuOn) {
       return (
-        <CustomButton handler={this.props.handler} onTouchStart={this.clickMenu} zIndex={1} height={'11%'} width={'90%'} 
+        <CustomButton handler={this.props.handler} onTouchStart={this.clickMenu} zIndex={2} height={'11%'} width={'90%'} 
                       borderWidth={1} borderTopLeftRadius={25} borderTopRightRadius={25}
                       BASE_COLOR={'#4F7495'} CLICK_COLOR={'#4A94FC'} borderColor={'black'}>
             <Text style={{textAlign:'center', marginTop:'15%', color:'white' }}> ... </Text>          

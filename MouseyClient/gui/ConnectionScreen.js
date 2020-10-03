@@ -17,7 +17,6 @@ export default class ConnectionScreen extends Screen{
   };
 
   search = () => {
-    console.log('Started Search')
     this.logicManager.broadcast(this.foundServer); 
   }
 

@@ -5,6 +5,7 @@ from Logic import ConnectionHandler, Messages, EncoderDecoder
 from Logic.MouseHandler import MouseHandler
 from Presistent.PresistentHandler import PresistentGenerationHandler
 from Logic.FileHandler import FileHandler
+from Logic.ViewerHandler import ViewerHandler
 
 class ConnectionManager(Threads.Thread):
 
@@ -22,6 +23,7 @@ class ConnectionManager(Threads.Thread):
         self.fileHandler = FileHandler()
         self.logged = True
         self.logoutFunc = logoutFunc
+        self.viewerHandler = ViewerHandler(360, 540, connectionHandler, ip, port)
 
     # The function connect to a phone by using private key
     def connect(self):
@@ -67,6 +69,10 @@ class ConnectionManager(Threads.Thread):
                 else:
                     self.connectionHandler.sendMsg(Messages.ReciveSplitMsg(), (self.ip, self.port))
 
+    # The function recived ack of split msg
+    def executeAckSplitMsg(self, msg):
+        self.connectionHandler.nextSplitMsg((self.ip, self.port))
+
     # The function execute a msg recived by the client
     def executeMsg(self, msg):
         if msg.opcode == Messages.GENERATION_OPCODE:
@@ -81,6 +87,8 @@ class ConnectionManager(Threads.Thread):
         elif msg.opcode == Messages.SPLIT_OPCODE:
             print('got split msg -> ', msg.getIndex())
             self.executeSplitMsg(msg)
+        elif msg.opcode == Messages.RECIVE_SPLIT_OPCODE:
+            self.executeAckSplitMsg(msg)
         elif msg.opcode == Messages.ROLLER_MOVE_OPCODE:
             self.mouseHandler.rollerMove(msg)
         elif msg.opcode == Messages.FILE_OPCODE:
@@ -91,6 +99,12 @@ class ConnectionManager(Threads.Thread):
             self.sendFin()
         elif msg.opcode == Messages.MOUSEY_BATTERY_OPCODE:
             self.updateBattery(msg)
+        elif msg.opcode == Messages.START_VIEWER_OPCODE:
+            self.startViewer()
+        elif msg.opcode == Messages.END_VIEWER_OPCODE:
+            self.endViewer()
+        elif msg.opcode == Messages.ZOOM_OPCODE:
+            self.zoom(msg)
         else:
             return
 
@@ -144,6 +158,18 @@ class ConnectionManager(Threads.Thread):
     # The function return the real name of the file
     def getFileName(self, refactor_name):
         return self.fileHandler.getFileName(refactor_name)
+
+    # The function start the viewer handler
+    def startViewer(self):
+        self.viewerHandler.start()
+
+    # The function end the viewer handler
+    def endViewer(self):
+        self.viewerHandler.stopViewer()
+
+    # The function execute zoom
+    def zoom(self, msg):
+        self.viewerHandler.zoom(msg.getState())
 
     # The function is the funing function of the thread
     def run(self):

@@ -32,6 +32,8 @@ class EncoderDecoder:
             return self.decodeMouseMoveMsg(buffer)
         elif opCode == chr(Messages.SPLIT_OPCODE):
             return self.decodeSplitMsg(buffer)
+        elif opCode == chr(Messages.RECIVE_SPLIT_OPCODE):
+            return Messages.ReciveSplitMsg()
         elif opCode == chr(Messages.TOUCH_MOVE_OPCODE):
             return self.decodeToouchMoveMsg(buffer)
         elif opCode == chr(Messages.ROLLER_MOVE_OPCODE):
@@ -48,6 +50,12 @@ class EncoderDecoder:
             return Messages.FinMsg()
         elif opCode == chr(Messages.MOUSEY_BATTERY_OPCODE):
             return self.decodeBattryMsg(buffer)
+        elif opCode == chr(Messages.START_VIEWER_OPCODE):
+            return Messages.StartViewerMsg()
+        elif opCode == chr(Messages.END_VIEWER_OPCODE):
+            return Messages.EndViewerMsg()
+        elif opCode == chr(Messages.ZOOM_OPCODE):
+            return self.decodeZoomMsg(buffer)
         return None
 
     def decodeFoundMsg(self, buffer):
@@ -174,6 +182,17 @@ class EncoderDecoder:
         batrery = str(batrery, "utf-8")
         batrery = cleanString(batrery)
         return Messages.MouseyBatteryMsg(batrery)
+
+    def decodeZoomMsg(self, buffer):
+        offset = 0
+        opcode, state = struct.unpack_from('1s10s', buffer, offset)
+        state = str(state, "utf-8")
+        state = cleanString(state)
+        if state == 'true':
+            state = True
+        else:
+            state = False
+        return Messages.ZoomMsg(state)
 
     def decodeString(self, s):
         opCode = s[0]

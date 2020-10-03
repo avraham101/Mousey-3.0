@@ -14,8 +14,8 @@ import ConnectionScreen from './gui/ConnectionScreen';
 import MouseScreen from './gui/MouseScreen';
 import TouchPadScreen from './gui/TouchPadScreen';
 import FilesScreen from './gui/FilesScreen';
+import ViewerScreen from './gui/ViewerScreen';
 import LogicManager from './service/LogicManager';
-
 
 export default class ScreenHandler extends React.Component{
   
@@ -27,6 +27,7 @@ export default class ScreenHandler extends React.Component{
     // this.state = {stratgyScreen:new MouseScreen(this, new LogicManager())}; 
     // this.state = {stratgyScreen:new TouchPadScreen(this,new LogicManager())};
     // this.state = {stratgyScreen:new FilesScreen(this,new LogicManager())};
+    // this.state = {stratgyScreen:new ViewerScreen(this,new LogicManager())};
   }
 
   navigate(stratgyScreen) {

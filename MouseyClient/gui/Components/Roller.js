@@ -14,8 +14,6 @@ export default class Roller extends Component{
   onRollerMove = (e) => {
     let treshold = 0.3;
     let tresholdTime = 50;
-    console.log(e.nativeEvent.timestamp);
-    // console.log(e.nativeEvent.pageY);
     if(this.prevRoll != null) {
       if(e.nativeEvent.timestamp - this.prevRoll.timestamp > tresholdTime) {
         this.rollerSpeed = null;

@@ -3,6 +3,7 @@ import ConnectionHandler from './ConnectionHandler';
 import GenerationHandler from './GenerationHandler';
 import MousetHandler from './MouseyHandler';
 import FileHandler from './FileHandler';
+import ViewerHandler from './ViewerHandler';
 
 export default class LogicManager {
 
@@ -10,13 +11,16 @@ export default class LogicManager {
   generationHandler:GenerationHandler;
   mouseyHandler:MousetHandler;
   fileHandler:FileHandler;
+  viewerHandler:ViewerHandler;
   logoutPromise: ()=>void;
+
 
   constructor(logoutPromise:()=>void) {
     this.connectionHandler = new ConnectionHandler(1250, logoutPromise);
     this.generationHandler = new GenerationHandler(this.connectionHandler);
     this.mouseyHandler = new MousetHandler(this.connectionHandler);
     this.fileHandler = new FileHandler(this.connectionHandler);
+    this.viewerHandler = new ViewerHandler(this.connectionHandler);
   }
 
   /**
@@ -256,4 +260,32 @@ export default class LogicManager {
     this.fileHandler.setImagePath(promise);
   }
 
+  /**
+   * The function start the viewer handler
+   * @param promise 
+   */
+  startViewer(promise) {
+    this.viewerHandler.startViewer(promise);
+  }  
+
+  /**
+   * The function end the viwer handler
+   */
+  endViewer() {
+    this.viewerHandler.endViewer();
+  }
+
+  /**
+   * The function send a zoom in msg to the server
+   */
+  viewZoomIn() {
+    this.viewerHandler.zoomIn();
+  }
+
+  /**
+   * The function send a zoom out msg to the server
+   */
+  viewZoomOut() {
+    this.viewerHandler.zoomOut();
+  }
 }

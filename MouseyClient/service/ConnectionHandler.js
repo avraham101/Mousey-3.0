@@ -3,7 +3,7 @@ import EncoDecoder from './EncoderDecoder';
 import {getSystemName, getDeviceName, getUniqueId, getBatteryLevel, } from 'react-native-device-info'
 import {createFoundMsg, isSearchMsg, isConnectMsg, createGenerationMsg, createSplitMsgs, isReciveSpliteMsg, 
         createFileMsg, createLogoutMsg, isLogoutMsg, createAckLogoutMsg, isFinMsg, isAckLogoutMsg, createFinMsg,
-        createMouseyBatterMsg} from './Messages'
+        createMouseyBatterMsg, isViewerMsg, createEndViewerMsg, isAckEndViewerMsg, isSplitMsg, createReciveSplitMsg} from './Messages'
 
 var port_mousey = undefined;
 var address_mousey = undefined;
@@ -42,6 +42,7 @@ export default class ConnectionHandler {
     let sendAckLogout = this.sendAckLogout;
     let sendFin = this.sendFin;
     let startBatteryMsgLoop =  this.startBatteryMsgLoop;
+    let sendReciveSplitMsg = this.sendReciveSplitMsg;
     //sender info stracture "address": , "family": , "port": , "size":
     this.socket.on('message', function(msg, senderInfo) {
         msg = encodeco.decode(msg);
@@ -60,6 +61,9 @@ export default class ConnectionHandler {
         }
         else if(isAckLogoutMsg(msg)) {
           sendFin();
+        }
+        else if(isSplitMsg(msg)) {
+          sendReciveSplitMsg();
         }
       });
     this.socket.on('error', (e)=>{
@@ -152,6 +156,12 @@ export default class ConnectionHandler {
       }
     }
     nextMsg(msgs,0);
+  }
+
+  sendReciveSplitMsg = () => {
+    console.log('send ack msg');
+    let msg = createReciveSplitMsg();
+    this.send(msg);
   }
 
   /**
@@ -255,7 +265,6 @@ export default class ConnectionHandler {
     let msg = createMouseyBatterMsg(undefined);
     getBatteryLevel().then(state =>{
       msg.setBattery(state);
-      console.log(state);
       send(msg);
     });
   }
@@ -270,6 +279,41 @@ export default class ConnectionHandler {
     if(address_mousey!=undefined && port_mousey!=undefined) {
       setTimeout(this.startBatteryMsgLoop,interval);
     }
+  }
+
+  /**
+   * The function start a lisener for recivng a Viewer Lisener
+   */
+  startViewerLisener = (promise) => {
+    lisener = (msg, senderInfo) => {
+      if(isViewerMsg(msg)) {
+        promise(msg);
+      }
+    }
+  }
+
+  /**
+   * The function send end viewer msg, until the first ack recived 
+   */
+  sendEndViewerMsg = () => {
+    let recivedAck = false;
+    let attempts = 5;
+    let interval = 500;
+    let msg = createEndViewerMsg();
+    let loopEndViewer = () => {
+      attempts --;
+      this.send(msg);
+      lisener = (msg, senderInfo) => {
+        if(isAckEndViewerMsg(msg)) {
+          recivedAck = true;
+          lisener = null;
+        }
+      }
+      if(!recivedAck && attempts >0) {
+        setTimeout(loopEndViewer, interval);
+      }
+    }
+    loopEndViewer();
   }
 
 }

@@ -50,7 +50,6 @@ export default class InitScreen extends Screen{
    * The function get the instruction text
    */
   getInstuction = () => {
-    console.log(this.initState)
     let result =  
     this.initState == 'Error'? 'Error':
     this.initState == 'Stop'? 'adjasting stopped':
@@ -96,12 +95,10 @@ export default class InitScreen extends Screen{
   }
 
   moveToNextState(nextState) {
-    console.log("in promise");
     this.unsubscribeSensors();
     //waiting number of secenods for the next state to proceed
     let interval = 600; //secend 1 = 1000
     let restartCallback = () => {
-        console.log('in callback');
         this.initState = nextState;
         this.logicManager.clearSensorsData();
         //TODO DELETE THIS

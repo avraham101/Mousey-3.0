@@ -19,12 +19,12 @@ BLACK = '#000000'
 # FONTS
 HEADER_FONT = ("Calibri", 36, "bold")
 SUB_HEADER_FONT = ("Calibri", 20)
-DEVICE_HEADER_FONT = ("Calibri", 17)
-BATTERY_HEADER_FONT = ("Calibri", 14)
+DEVICE_HEADER_FONT = ("Calibri", 11, "bold")
+BATTERY_HEADER_FONT = ("Calibri", 10)
 BUTTON_FONT = ("Calibri", 16)
 SMALL_BUTTON_FONT = ("Calibri", 14)
 LISTBOX_HEADER_FONT = ("Calibri", 16)
-LISTBOX_FONT = ("Calibri", 12)
+LISTBOX_FONT = ("Calibri", 10)
 
 def getPhoto(subPath):
     path = os.getcwd()
@@ -44,8 +44,8 @@ class Appy:
 
     def initWindow(self):
         self.root.title('')
-        self.root.resizable(0, 0)
-        self.root.geometry("300x450")
+        # self.root.resizable(0, 0)
+        self.root.geometry("400x600")
         self.root.configure(background=DARK_BLUE)
         self.rapper_frame = Frame(self.root, bg=DARK_BLUE)
         self.rapper_frame.pack(expand="true", fill="both", padx=2, pady=2)
@@ -182,8 +182,8 @@ class SearchFrame:
         self.frame.create_image(0, 0, anchor=NW, image=self.backgroundImg)
         self.frame.pack(expand="true", fill="both")
         padyClients = (144, 0)
-        padyButtons = 12
-        padx = (18, 0)
+        padyButtons = 4
+        padx = (16, 0)
         y_grid = 0
         y_grid = self.initClients(self.frame, y_grid, padyClients, padx)
         self.initButtons(self.frame, y_grid, 0, padx, padyButtons)
@@ -192,10 +192,10 @@ class SearchFrame:
     def initClients(self, frame, y_grid, pady, padx):
         rapper_frame = Frame(frame, bg=GRAY_BLUE)
         rapper_frame.grid(row=y_grid, column=0, rowspan=1, columnspan=4, padx=padx, pady=pady)
-        label = Label(rapper_frame, text='Select your Smartphone from the list', width=32, font=("Calibri", 12),
+        label = Label(rapper_frame, text='Select your Smartphone', width=26, font=("Calibri", 10),
                                bg=DARK_GRAY_BLUE, fg=WHITE)
-        label.pack()
-        self.clients_list = Listbox(rapper_frame, width=30, bd=0, font=LISTBOX_FONT)
+        label.pack(side="top")
+        self.clients_list = Listbox(rapper_frame, width=23, height=8, bd=0, font=LISTBOX_FONT)
         # set the listbox contains func
         self.clients_list.contains = lambda x: x in self.clients_list.get(0, "end")
         self.clients_list.pack(side="left", fill="y", padx=(2, 0), pady=2)
@@ -269,11 +269,11 @@ class ConnectedFrame:
         y_grid = 1
         x_grid = 0
         pady = 20
-        padx = 25
+        padx = 22
         y_grid = self.initHeader(self.frame, y_grid, x_grid, pady, padx)
         pady = 0
         y_grid = self.initMainBlock(self.frame, y_grid, x_grid, pady, padx)
-        pady = 8
+        pady = 7
         self.initButton(self.frame, y_grid, pady, padx)
         self.frame.after(self.timeUpdate, self.updateFrame)
 
@@ -284,7 +284,7 @@ class ConnectedFrame:
         devicename = self.deviceName
         if devicename is not None and len(devicename) > 12:
             devicename = devicename[0:14] + '\n' + devicename[14:]
-        self.nameLabel = Label(inner_frame, text=devicename, width=12, font=DEVICE_HEADER_FONT ,
+        self.nameLabel = Label(inner_frame, text=devicename, width=13, font=DEVICE_HEADER_FONT,
                                bg=DARK_GRAY_BLUE, fg=WHITE)
         self.nameLabel.grid(row=0, column=0)
         battery = str(self.battery) + '%   '
@@ -304,10 +304,10 @@ class ConnectedFrame:
     def initMouseMovementView(self, frame, y_grid, x_grid, pady, padx):
         inner_frame = Frame(frame, bg=WHITY_BLUE)
         inner_frame.grid(row=y_grid, column=x_grid, rowspan=1, columnspan=1, padx=(0, 10))
-        label = Label(inner_frame, text='Last\nMouse\nMove:', width=8, font=BATTERY_HEADER_FONT,
+        label = Label(inner_frame, text='Last\nMouse\nMove:', width=7, font=BATTERY_HEADER_FONT,
                            bg=DARK_GRAY_BLUE, fg=WHITE)
         label.pack(side="top")
-        self.moveLabel = Label(inner_frame, text='', width=8, font=BATTERY_HEADER_FONT,
+        self.moveLabel = Label(inner_frame, text='', width=7, font=BATTERY_HEADER_FONT,
                                bg=WHITY_BLUE, fg=BLACK)
         self.moveLabel.pack(side="top")
         return y_grid + 2
@@ -315,14 +315,14 @@ class ConnectedFrame:
     def initFilesView(self, frame, y_grid, x_grid, pady, padx):
         inner_frame = Frame(frame, bg=BLACK)
         inner_frame.grid(row=y_grid, column=x_grid, rowspan=2, columnspan=1, padx=padx, pady=pady)
-        title = Label(inner_frame, text='Recived Files:', width=14, font=BATTERY_HEADER_FONT, bg=DARK_GRAY_BLUE,
+        title = Label(inner_frame, text='Recived Files:', width=16, font=BATTERY_HEADER_FONT, bg=DARK_GRAY_BLUE,
                       fg=WHITE)
         title.pack()
         def open(event):
             file = self.files_list.curselection()
             file = self.files_list.get(file)
             self.logicManger.openFile(file)
-        self.files_list = Listbox(inner_frame, bd=0, font=LISTBOX_FONT, width=16)
+        self.files_list = Listbox(inner_frame, bd=0, font=LISTBOX_FONT, width=14, height=8)
         self.files_list.pack(side="left", fill="y", padx=(1, 0), pady=1)
         self.files_list.contains = lambda x: x in self.files_list.get(0, "end")
         self.files_list.bind('<Double-1>', open)

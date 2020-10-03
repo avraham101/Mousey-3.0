@@ -1,8 +1,9 @@
 export type Message = Boradcast | Server2Client | Client2Server;
 
 type Boradcast = SearchMsg;
-type Server2Client = ConnectMsg | ReciveSplitMsg | LogoutMsg;
-type Client2Server = FoundMsg | GenerationMsg | MouseClickMsg | MouseMoveMsg | SplitMsg | TouchMsg | RollerMsg | FileMsg | LogoutMsg;
+type Server2Client = ConnectMsg | ReciveSplitMsg | LogoutMsg | AckLogoutMsg | FinMsg | AckEndViewerMsg | SplitMsg;
+type Client2Server = FoundMsg | GenerationMsg | MouseClickMsg | MouseMoveMsg | SplitMsg | TouchMsg | RollerMsg | FileMsg | LogoutMsg 
+                        | AckLogoutMsg | FinMsg | MouseyBatteryMsg | StartViewerMsg | EndViewerMsg | ReciveSplitMsg | ZoomMsg;
 
 //------------------------------------------ libary functions -----------------------------------------------
 function padString(str:string, num:number) {
@@ -28,6 +29,11 @@ export var RECIVE_SPLIT_MSG = 30;
 export var ACK_LOGOUT_MSG = 31;
 export var FIN_MSG = 32;
 export var MOUSEY_BATTERY_MSG = 33;
+export var START_VIEWER_MSG = 34;
+export var VIEWER_MSG = 35;
+export var END_VIEWER_MSG = 36;
+export var ACK_END_VIEWER_MSG = 37;
+export var ZOOM_MSG = 38;
 
 //----------------------------------------------- interfaces -----------------------------------------------
 interface SearchMsg {
@@ -98,6 +104,8 @@ interface SplitMsg {
 interface ReciveSplitMsg {
     tag:'ReciveSplitMsg',
     opcode:number
+    isReady:() => boolean,
+    toString:() => string,
 }
 
 interface TouchMsg {
@@ -159,6 +167,40 @@ interface MouseyBatteryMsg {
     toString:()=>string,
 }
 
+interface StartViewerMsg {
+    tag:'StartViewerMsg',
+    opcode:number, 
+    isReady:()=>boolean,
+    toString:()=>string,
+}
+
+export interface ViewerMsg {
+    tag:'ViewerMsg',
+    opcode:number,
+    data:string, 
+    getView: ()=>any,
+}
+
+interface EndViewerMsg {
+    tag: 'EndViewerMsg',
+    opcode: number,
+    isReady: ()=> boolean,
+    toString: ()=> string,
+}
+
+interface AckEndViewerMsg {
+    tag: 'AckEndViewerMsg',
+    opcode: number,
+}
+
+interface ZoomMsg {
+    tag:'ZoomMsg',
+    opcode:number,
+    state: boolean,
+    isReady: ()=>boolean,
+    toString: ()=>string,
+}
+
 //----------------------------------------------- predicats -----------------------------------------------
 export const isSearchMsg = (x:any):x is SearchMsg => x.tag === "SearchMsg";
 export const isFoundMsg = (x:any):x is FoundMsg => x.tag === "FoundMsg";
@@ -175,6 +217,11 @@ export const isLogoutMsg = (x:any): x is LogoutMsg => x.tag === 'LogoutMsg';
 export const isAckLogoutMsg = (x:any): x is AckLogoutMsg => x.tag === 'AckLogoutMsg';
 export const isFinMsg = (x:any): x is FinMsg => x.tag === 'FinMsg';
 export const isMouseyBatteryMsg = (x:any): x is MouseyBatteryMsg => x.tag ==='MouseyBatteryMsg';
+export const isStartViewerMsg = (x:any): x is StartViewerMsg => x.tag === 'StartViewerMsg';
+export const isViewerMsg = (x:any): x is ViewerMsg => x.tag === 'ViewerMsg';
+export const isEndViewerMsg = (x:any): x is EndViewerMsg => x.tag === 'EndViewerMsg';
+export const isAckEndViewerMsg = (x:any): x is AckEndViewerMsg => x.tag === 'AckEndViewerMsg';
+export const isZoomMsg = (x:any): x is ZoomMsg => x.tag === 'ZoomMsg';
 
 //-------------------------------------------- constractors -----------------------------------------------
 export const createSearchMsg = (key:string):SearchMsg => {
@@ -264,7 +311,7 @@ export const createMouseMoveMsg = (data:any): MouseMoveMsg => {
     return msg;
 }
 
-const createSplitMsg = (data: any, index: number, total:number, size:number):SplitMsg => {
+export const createSplitMsg = (data: any, index: number, total:number, size:number):SplitMsg => {
     let msg:SplitMsg = {tag:'SplitMsg', opcode:SPLIT_MSG, index:index, total:total, size:size, data:data, isReady:null, toString:null};
     msg.isReady = ():boolean => true;
     msg.toString =  ():string => {
@@ -297,7 +344,15 @@ export const createSplitMsgs = (msg: Message):SplitMsg[] => {
 } 
 
 export const createReciveSplitMsg = ():ReciveSplitMsg => {
-    return {tag:'ReciveSplitMsg', opcode:RECIVE_SPLIT_MSG};
+    let msg:ReciveSplitMsg = {tag:'ReciveSplitMsg', opcode:RECIVE_SPLIT_MSG, isReady:null, toString:null};
+    msg.isReady = () => true;
+    msg.toString = ():string => {
+        let plainText:string = String.fromCharCode(msg.opcode);
+        plainText += String.fromCharCode(0);
+        return plainText;
+    }
+    return msg;
+
 }
 
 export const createTouchMsg = (x:number, y:number, last:boolean):TouchMsg => {
@@ -400,3 +455,48 @@ export const createMouseyBatterMsg = (battery:number):MouseyBatteryMsg => {
     return msg;
 }
 
+export const createStartViewerMsg = ():StartViewerMsg => {
+    let msg:StartViewerMsg = {tag:'StartViewerMsg', opcode:START_VIEWER_MSG, isReady:undefined, toString:undefined};
+    msg.isReady = ()=>true;
+    msg.toString = ():string =>{
+        let plainText:string = String.fromCharCode(msg.opcode);
+        plainText += String.fromCharCode(0);
+        return plainText;
+    };
+    return msg;
+}
+
+export const createViewerMsg = (data:string):ViewerMsg => {
+    let msg:ViewerMsg = {tag:'ViewerMsg', opcode:VIEWER_MSG, data:data, getView:undefined};
+    msg.getView = () => {
+        var view = 'data:image/jpeg;base64,'+data; 
+        return view;
+    };
+    return msg;
+}
+
+export const createEndViewerMsg = ():EndViewerMsg => {
+    let msg:EndViewerMsg = {tag:'EndViewerMsg', opcode:END_VIEWER_MSG, isReady:null, toString:null};
+    msg.isReady = ()=>true;
+    msg.toString = ():string =>{
+        let plainText:string = String.fromCharCode(msg.opcode);
+        plainText += String.fromCharCode(0);
+        return plainText;
+    };
+    return msg;
+}
+
+export const createAckEndViewerMsg = ():AckEndViewerMsg => {
+    return {tag:'AckEndViewerMsg', opcode:ACK_END_VIEWER_MSG};
+}
+
+export const createZoomMsg = (state:boolean):ZoomMsg => {
+    let msg:ZoomMsg = {tag:'ZoomMsg', opcode:ZOOM_MSG, state:state, isReady:null, toString:null};
+    msg.isReady = ()=>true;
+    msg.toString = ()=> {
+        let plainText:string = String.fromCharCode(msg.opcode);
+        plainText += padString(''+msg.state, 10);
+        return plainText;
+    }
+    return msg;
+}

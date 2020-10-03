@@ -3,6 +3,7 @@ import {View, Text, Button, StyleSheet, ImageBackground, Image} from 'react-nati
 import Screen from './Screen';
 import MouseScreen from './MouseScreen';
 import FilesScreen from './FilesScreen';
+import ViewerScreen from './ViewerScreen';
 import Menu from './Components/Menu';
 import Roller from './Components/Roller';
 import CustomButton from './Components/CustomButton';
@@ -15,6 +16,7 @@ export default class TouchPadScreen extends Screen{
     this.clickMousey = this.clickMousey.bind(this);
     this.clickFileTransmit = this.clickFileTransmit.bind(this);
     this.clickLogout = this.clickLogout.bind(this);
+    this.clickViewer = this.clickViewer.bind(this);
     this.clickLeft = this.clickLeft.bind(this);
     this.realseLeft = this.realseLeft.bind(this);
     this.clickRight = this.clickRight.bind(this);
@@ -34,6 +36,10 @@ export default class TouchPadScreen extends Screen{
 
   clickLogout() {
     this.logicManager.logoutMousey();
+  }
+
+  clickViewer() {
+    this.handler.navigate(new ViewerScreen(this.handler, this.logicManager));
   }
 
   clickLeft(e) {
@@ -73,7 +79,6 @@ export default class TouchPadScreen extends Screen{
     let treshold = 165;
     if(this.prevMoveTimeStamp!=null) {
       if(e.nativeEvent.timestamp - this.prevMoveTimeStamp < treshold){
-        console.log('double click');
         this.onDoubleClick();
       }
     }
@@ -89,7 +94,6 @@ export default class TouchPadScreen extends Screen{
     //   indexOfTouch = indexOfTouch - 1;
     // }
     currentTouch = e.nativeEvent.touches[indexOfTouch]; 
-    // console.log('x: '+currentTouch.locationX+'\n\t\t\t\t\t y: '+currentTouch.locationY);
     this.logicManager.sendTouchMove(currentTouch.locationX, currentTouch.locationY, false);
   }
 
@@ -101,7 +105,7 @@ export default class TouchPadScreen extends Screen{
     return( 
       <ImageBackground source={require('./img/TouchPad_Screen.png')} style={styles.container}>
           <Menu handler={this.handler} clickMousey={this.clickMousey} clickFileTransmit={this.clickFileTransmit} 
-                                       clickLogout={this.clickLogout}/>
+                                       clickLogout={this.clickLogout} clickViewer={this.clickViewer}/>
           <View style={{flex:1}}/>
           <View style={{flex:2, flexDirection:'row-reverse'}}>
             <CustomButton handler={this.handler}  onTouchStart={this.clickLeft} onTouchEnd={this.realseLeft} 

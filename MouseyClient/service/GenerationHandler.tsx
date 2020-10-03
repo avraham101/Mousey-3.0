@@ -44,7 +44,6 @@ export default class GenerationHandler {
       let current:Accelometer = createAccelometer(x,y,z);
       this.state.accelometers.push(current);
       let len = this.state.accelometers.length;
-      console.log(len);
     }
   }
 
