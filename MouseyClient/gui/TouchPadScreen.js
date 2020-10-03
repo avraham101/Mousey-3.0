@@ -79,6 +79,7 @@ export default class TouchPadScreen extends Screen{
     let treshold = 165;
     if(this.prevMoveTimeStamp!=null) {
       if(e.nativeEvent.timestamp - this.prevMoveTimeStamp < treshold){
+        console.log('double click');
         this.onDoubleClick();
       }
     }

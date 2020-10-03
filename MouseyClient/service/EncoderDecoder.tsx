@@ -118,6 +118,9 @@ export default class EncoDecoder {
 
   decodeViewerMsg = (cipher) => {
     let offset = 1;
+    let type_bytes = this.cleanBytes(cipher.slice(offset,offset+10));
+    let type = this.bytesToString(type_bytes,0)
+    offset += 10;
     let bytes_size = this.cleanBytes(cipher.slice(offset,offset+10));
     let size = parseInt(this.bytesToString(bytes_size,0));
     offset += 10;
@@ -125,11 +128,14 @@ export default class EncoDecoder {
     for (let i = offset; i <= size; i++) {
       data += String.fromCharCode(cipher[i]);
     }
-    return createViewerMsg(data);
+    return createViewerMsg(type, data);
   }
 
   decodeStringViewerMsg = (cipher) => {
     let offset = 1;
+    let type = cipher.slice(offset,offset+10);
+    type = type.replace('\0','');
+    offset+= 10;
     let size = cipher.slice(offset,offset+10);
     size = size.replace('\0','');
     size = parseInt(size);
@@ -137,7 +143,7 @@ export default class EncoDecoder {
     offset += 10;
     let data = cipher.slice(offset, offset+size);
     // console.log(data);
-    return createViewerMsg(data);
+    return createViewerMsg(type, data);
   }
 
   cleanBytes = (bytes) => {

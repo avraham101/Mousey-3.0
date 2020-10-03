@@ -80,6 +80,9 @@ class ViewerHandler(Threads.Thread):
         pic = pic.crop((left, top, right, bottom))
         return pic
 
+    def startViewer(self):
+        self.running = True
+
     def stopViewer(self):
         self.running = False
         msg = Messages.AckEndViewerMsg()
@@ -107,9 +110,10 @@ class ViewerHandler(Threads.Thread):
             img = self.getCenteredScreen()
             arrBytes = io.BytesIO()
             img.save(arrBytes, format='JPEG')
-            value = arrBytes.getvalue()
-            size = len(value)
-            msg = Messages.ViewerMsg(value, size)
+            value1 = arrBytes.getvalue()
+            size1 = len(value1)
+            print('send jpeg')
+            msg = Messages.ViewerMsg(value1, size1, 'JPEG')
             try:
                 self.connectionHandler.sendMsg(msg, (self.ip, self.port))
             except Exception as e:

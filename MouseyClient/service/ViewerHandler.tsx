@@ -22,7 +22,6 @@ export default class ViewerHandler {
     this.connectionHandler.send(msg);
     this.view = view
     this.connectionHandler.startViewerLisener(this.setCurrentImg)
-    
   }
 
   /**

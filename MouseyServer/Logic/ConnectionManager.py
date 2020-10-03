@@ -161,6 +161,8 @@ class ConnectionManager(Threads.Thread):
 
     # The function start the viewer handler
     def startViewer(self):
+        print('start viewer')
+        self.viewerHandler = ViewerHandler(360, 540, self.connectionHandler, self.ip, self.port)
         self.viewerHandler.start()
 
     # The function end the viewer handler

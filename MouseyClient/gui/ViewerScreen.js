@@ -125,15 +125,16 @@ export default class ViewerScreen extends Screen{
   renderView= () => {
     if(this.view == undefined)
       return <Image style={{position: 'absolute', left:0, top:0, width: 360, height: 540}} source={require('./img/pic1.png')}/>;
-    let output = [];
-    if(this.prevprevView != undefined)
-      output.push(<Image style={{position: 'absolute', left:0, top:0, width: 360, height: 540}} source={{uri: this.prevprevView}}/>);
-    if(this.prevView != undefined)
-      output.push(<Image style={{position: 'absolute', left:0, top:0, width: 360, height: 540}} source={{uri: this.prevView}}/>);
-    output.push(<Image style={{position: 'absolute', left:0, top:0, width: 360, height: 540}} source={{uri: this.view}}/>);
-    this.prevprevView = this.prevView;
+    if(this.prevView != undefined) {
+      let output = (<View>
+                <Image style={{position: 'absolute', left:0, top:0, width: 360, height: 540}} source={{uri: this.prevView}}/>
+                <Image style={{position: 'absolute', left:0, top:0, width: 360, height: 540}} source={{uri: this.view}}/>
+              </View>);
+      this.prevView = this.view;
+      return output;
+    }
     this.prevView = this.view;
-    return output;
+    return <Image style={{position: 'absolute', left:0, top:0, width: 360, height: 540}} source={{uri: this.view}}/>;
   }
 
   render = () => {

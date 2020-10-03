@@ -3,6 +3,7 @@ import {StyleSheet, View, Text, ImageBackground, Image, ScrollView} from 'react-
 import Screen from './Screen';
 import MouseScreen from './MouseScreen';
 import TouchPadScreen from './TouchPadScreen';
+import ViewerScreen from './ViewerScreen';
 import Menu from './Components/Menu';
 import CustomButton from './Components/CustomButton';
 
@@ -18,6 +19,7 @@ export default class FilesScreen extends Screen{
     this.clickPrevFolder = this.clickPrevFolder.bind(this);
     this.clickNextFolder = this.clickNextFolder.bind(this);
     this.clickPath = this.clickPath.bind(this);
+    this.clickViewer = this.clickViewer.bind(this);
     //send file properties
     this.selectedFile = null;
     this.selectedFileEvent = null;
@@ -48,6 +50,10 @@ export default class FilesScreen extends Screen{
 
   clickLogout() {
     this.logicManager.logoutMousey();
+  }
+
+  clickViewer() {
+    this.handler.navigate(new ViewerScreen(this.handler, this.logicManager));
   }
 
   clickPrevFolder(e) {
@@ -235,7 +241,8 @@ export default class FilesScreen extends Screen{
   render = () => {
       return ( 
         <ImageBackground source={require('./img/Files_Screen.png')} style={styles.container}>
-          <Menu handler={this.handler} clickMousey={this.clickMousey} clickTouchPad={this.clickTouchPad} clickLogout={this.clickLogout}/>
+          <Menu handler={this.handler} clickMousey={this.clickMousey} clickTouchPad={this.clickTouchPad} 
+                clickLogout={this.clickLogout} clickViewer={this.clickViewer}/>
           {this.renderComputerGate()}
           {this.renderSelectedFile()}
           <View style={{flex:1,}}/>

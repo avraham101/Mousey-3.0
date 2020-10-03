@@ -4,6 +4,7 @@ import { setUpdateIntervalForType, SensorTypes , accelerometer, gyroscope, magne
 import Screen from './Screen';
 import TouchPadScreen from './TouchPadScreen';
 import FilesScreen from './FilesScreen';
+import ViewerScreen from './ViewerScreen';
 import Menu from './Components/Menu';
 import Roller from './Components/Roller';
 import CustomButton from './Components/CustomButton';
@@ -20,6 +21,7 @@ export default class MouseScreen extends Screen{
     this.realseLeft = this.realseLeft.bind(this);
     this.clickRight = this.clickRight.bind(this);
     this.realseRight = this.realseRight.bind(this);
+    this.clickViewer = this.clickViewer.bind(this);
     this.subscribeSensors = this.subscribeSensors.bind(this);
     this.subscribeSensors();
   };
@@ -35,7 +37,13 @@ export default class MouseScreen extends Screen{
   }
 
   clickLogout() {
+    this.unsubscribeSensors();
     this.logicManager.logoutMousey();
+  }
+
+  clickViewer() {
+    this.unsubscribeSensors();
+    this.handler.navigate(new ViewerScreen(this.handler, this.logicManager));
   }
 
   clickLeft() {
@@ -83,7 +91,7 @@ export default class MouseScreen extends Screen{
     return( 
       <ImageBackground source={require('./img/Mousey_Screen.png')} style={styles.container}>
           <Menu handler={this.handler} clickTouchPad={this.clickTouchPad} clickFileTransmit={this.clickFileTransmit}
-                                       clickLogout={this.clickLogout}/>
+                                       clickLogout={this.clickLogout} clickViewer={this.clickViewer}/>
           <View style={{flex:1}}/>
           <View style={{flex:3, flexDirection:'row-reverse', backgroundColor:''}}>
             <CustomButton handler={this.handler}  onTouchStart={this.clickLeft} onTouchEnd={this.realseLeft} 

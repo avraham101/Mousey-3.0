@@ -257,17 +257,21 @@ class StartViewerMsg(Message):
 
 class ViewerMsg(Message):
 
-    def __init__(self, value, size):
+    def __init__(self, value, size, tp):
         super().__init__(VIEWER_OPCODE)
         self.size = size
         self.value = value
+        self.tp = tp
 
     def encode(self):
+        tp = self.tp
+        while len(tp) < 10:
+            tp += '\0'
         data = base64.b64encode(self.value)
         size = str(len(data))
         while len(size) < 10:
             size += '\0'
-        return size.encode() + data
+        return tp.encode() + size.encode() + data
 
 class EndViewerMsg(Message):
 

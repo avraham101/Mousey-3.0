@@ -177,6 +177,7 @@ interface StartViewerMsg {
 export interface ViewerMsg {
     tag:'ViewerMsg',
     opcode:number,
+    type:string,
     data:string, 
     getView: ()=>any,
 }
@@ -466,10 +467,11 @@ export const createStartViewerMsg = ():StartViewerMsg => {
     return msg;
 }
 
-export const createViewerMsg = (data:string):ViewerMsg => {
-    let msg:ViewerMsg = {tag:'ViewerMsg', opcode:VIEWER_MSG, data:data, getView:undefined};
+export const createViewerMsg = (type:string, data:string):ViewerMsg => {
+    let msg:ViewerMsg = {tag:'ViewerMsg', opcode:VIEWER_MSG, type:type, data:data, getView:undefined};
     msg.getView = () => {
-        var view = 'data:image/jpeg;base64,'+data; 
+        console.log(msg.type)
+        var view = 'data:image/'+msg.type+';base64,'+msg.data; 
         return view;
     };
     return msg;
