@@ -36,11 +36,15 @@ export default class InitScreen extends Screen{
     return (
       <ImageBackground source={require('./img/Init_Screen.png')} style={styles.container}>
         <View style={{flex:1}}/>
-        <View style={{flex:3, paddingLeft:'25%', paddingRight:'25%', marginTop:'30%'}}>
-          <Text style={{paddingTop:'5%', paddingBottom:'5%', textAlign:'center'}}> Want to improve your mousey? </Text>
-          <Button title='Yes' onPress={yesClick}/>
-          <Text style={{paddingTop:'5%', paddingBottom:'5%', textAlign:'center'}}> Is only take a secend</Text>
-          <Button title='No' onPress={noClick}/>
+        <View style={{flex:3, paddingLeft:'15%', paddingRight:'15%', marginTop:'30%'}}>
+          <Text style={{paddingTop:'5%', paddingBottom:'1%', textAlign:'center'}}> Want to improve your mousey? </Text>
+          <Text style={{paddingTop:'5%', paddingBottom:'10%', textAlign:'center'}}> It's only take a secend</Text>
+          <View style={{paddingBottom:'7%', paddingLeft:'15%', paddingRight:'15%',}}>
+            <Button title='Yes' onPress={yesClick}/>
+          </View>
+          <View style={{paddingBottom:'5%', paddingLeft:'15%', paddingRight:'15%',}}>
+            <Button title='No' onPress={noClick}/>
+          </View>
         </View>
         <View style={{flex:1}}/>
       </ImageBackground>); 
@@ -54,15 +58,15 @@ export default class InitScreen extends Screen{
     this.initState == 'Error'? 'Error':
     this.initState == 'Stop'? 'adjasting stopped':
     this.initState == 'Ready'? 'For adjasting your phone, press start.' :
-    this.initState == 'Up'? 'Put your finger on the button and\n Slide your phone Up.\n In the end of the movment raise your finger.' :
-    this.initState == 'Down'? 'Put your finger on the button and\n Slide your phone Down.\n In the end of the movment raise your finger':
-    this.initState == 'Left' ? 'Put your finger on the button and\n Slide your phone Left.\n In the end of the movment raise your finger':
-    this.initState == 'Right'? 'Put your finger on the button and\n Slide your phone Right.\n In the end of the movment raise your finger':
-    this.initState == 'UpRight'? 'Put your finger on the button and\n Slide your phone Up Right.\n In the end of the movment raise your finger':
-    this.initState == 'UpLeft'? 'Put your finger on the button and\n Slide your phone Up Left.\n In the end of the movment raise your finger':
-    this.initState == 'DownRight'? 'Put your finger on the button and\n Slide your phone Down Right.\n In the end of the movment raise your finger':
-    this.initState == 'DownLeft'? 'Put your finger on the button and\n Slide your phone Down Left.\n In the end of the movment raise your finger':
-    this.initState == 'Ned' ? 'Put your finger on the button and\n Please do not move your phone.\n In the end of the movment raise your finger':
+    this.initState == 'Up'? 'Put your finger on the button and\n Slide your phone Up.\n At the end of the movment raise your finger.' :
+    this.initState == 'Down'? 'Put your finger on the button and\n Slide your phone Down.\n At the end of the movment raise your finger':
+    this.initState == 'Left' ? 'Put your finger on the button and\n Slide your phone Left.\n At the end of the movment raise your finger':
+    this.initState == 'Right'? 'Put your finger on the button and\n Slide your phone Right.\n At the end of the movment raise your finger':
+    this.initState == 'UpRight'? 'Put your finger on the button and\n Slide your phone Up Right.\n At the end of the movment raise your finger':
+    this.initState == 'UpLeft'? 'Put your finger on the button and\n Slide your phone Up Left.\n At the end of the movment raise your finger':
+    this.initState == 'DownRight'? 'Put your finger on the button and\n Slide your phone Down Right.\n At the end of the movment raise your finger':
+    this.initState == 'DownLeft'? 'Put your finger on the button and\n Slide your phone Down Left.\n At the end of the movment raise your finger':
+    this.initState == 'Ned' ? 'Put your finger on the button and\n Please do not move your phone.\n At the end of the movment raise your finger':
     this.initState == 'Processing' ? 'processing Data':
     this.initState == 'Done' ? 'Analyzing Data. Thank You for helping us':
     "Empty Instructions";
